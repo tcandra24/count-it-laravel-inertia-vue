@@ -7,6 +7,9 @@ import { createApp, h } from 'vue';
 import { ZiggyVue } from 'ziggy-js';
 import { initializeTheme } from './composables/useAppearance';
 
+import Toast from 'vue-toastification';
+import 'vue-toastification/dist/index.css';
+
 import SidebarProvider from './layouts/SidebarProvider.vue';
 import ThemeProvider from './layouts/ThemeProvider.vue';
 
@@ -74,6 +77,10 @@ createInertiaApp({
             })
             .use(plugin)
             .use(ZiggyVue)
+            .use(Toast, {
+                timeout: 3000,
+                position: 'bottom-right',
+            })
             .mount(el);
     },
     progress: {

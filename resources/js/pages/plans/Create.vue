@@ -9,8 +9,12 @@
                     <div class="relative z-20 bg-transparent">
                         <select
                             v-model="formData.month"
-                            class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent bg-none px-4 py-2.5 pr-11 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"
-                            :class="{ 'text-gray-800 dark:text-white/90': formData.month }"
+                            class="dark:bg-dark-900 shadow-theme-xs w-full appearance-none rounded-lg border bg-transparent px-4 py-2.5 pr-10 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"
+                            :class="{
+                                'text-gray-800 dark:text-white/90': formData.month,
+                                'border-error-300 focus:border-error-300 focus:ring-error-500/10 dark:border-error-700 dark:focus:border-error-800':
+                                    errors.month,
+                            }"
                         >
                             <option value="" disabled selected>Select Month</option>
                             <option value="1">January</option>
@@ -38,6 +42,8 @@
                             </svg>
                         </span>
                     </div>
+
+                    <p class="text-theme-xs text-error-500 mt-1.5" v-if="errors.month">{{ errors.month }}</p>
                 </div>
 
                 <div class="w-1/4">
@@ -45,8 +51,12 @@
                     <div class="relative z-20 bg-transparent">
                         <select
                             v-model="formData.year"
-                            class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent bg-none px-4 py-2.5 pr-11 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"
-                            :class="{ 'text-gray-800 dark:text-white/90': formData.year }"
+                            class="dark:bg-dark-900 shadow-theme-xs w-full appearance-none rounded-lg border bg-transparent px-4 py-2.5 pr-10 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"
+                            :class="{
+                                'text-gray-800 dark:text-white/90': formData.year,
+                                'border-error-300 focus:border-error-300 focus:ring-error-500/10 dark:border-error-700 dark:focus:border-error-800':
+                                    errors.year,
+                            }"
                         >
                             <option value="" disabled selected>Select Year</option>
                             <option value="2024">2024</option>
@@ -68,6 +78,8 @@
                             </svg>
                         </span>
                     </div>
+
+                    <p class="text-theme-xs text-error-500 mt-1.5" v-if="errors.year">{{ errors.year }}</p>
                 </div>
 
                 <!-- <div>
@@ -206,7 +218,12 @@
         </Card>
         <Card title="List of Detail" class="mt-5">
             <ButtonAction size="sm" variant="primary" @click="add()">Add Detail</ButtonAction>
-            <TableList>
+            <p class="text-theme-xs text-error-500 mt-1.5" v-if="errors.details">{{ errors.details }}</p>
+            <TableList
+                :class="{
+                    '!border-error-300 dark:!border-error-700': errors.details,
+                }"
+            >
                 <template #header>
                     <tr class="border-b border-gray-200 dark:border-gray-700">
                         <th class="w-3/11 px-5 py-3 text-left sm:px-6">
@@ -297,8 +314,10 @@ import { Input } from '@/components/ui/input';
 import { TrashIcon } from '@/icons';
 import DefaultLayout from '@/layouts/Default.vue';
 // import 'flatpickr/dist/flatpickr.css';
+import { useSwal } from '@/composables/useSwal';
 import { router } from '@inertiajs/vue3';
 import { reactive, ref } from 'vue';
+import { useToast } from 'vue-toastification';
 // import flatPickr from 'vue-flatpickr-component';
 // const showPassword = ref(false);
 
@@ -308,6 +327,19 @@ interface Detail {
     qty: number;
     price: number;
 }
+
+interface Errors {
+    month: string;
+    details: string;
+    year: string;
+}
+
+interface Props {
+    errors: Errors;
+}
+
+const toast = useToast();
+const swal = useSwal();
 
 const formData = reactive({
     month: '',
@@ -333,21 +365,37 @@ const remove = (id: number): void => {
     details.value = details.value.filter((element) => element.id !== id);
 };
 
-const submit = () => {
-    router.post(
-        '/plans',
-        {
-            month: formData.month,
-            year: formData.year,
-            details: details.value,
-        },
-        {
-            onSuccess: () => {
-                console.log('ok');
+const submit = async (): Promise<void> => {
+    const result = await swal.fire({
+        title: 'Do you want to save the plan?',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, Save it',
+        icon: 'question',
+        confirmButtonColor: '#465fff',
+    });
+
+    if (result.isConfirmed) {
+        router.post(
+            '/plans',
+            {
+                month: formData.month,
+                year: formData.year,
+                details: details.value,
             },
-        },
-    );
+            {
+                onSuccess: () => {
+                    toast.success('Plan Added Successfully!');
+                },
+                onError: (error) => {
+                    console.log(error);
+                    toast.error(`Something went wrong!!`);
+                },
+            },
+        );
+    }
 };
+
+defineProps<Props>();
 
 // const date = ref(null);
 

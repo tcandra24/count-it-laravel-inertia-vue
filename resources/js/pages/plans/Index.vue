@@ -67,6 +67,8 @@ import DefaultLayout from '@/layouts/Default.vue';
 
 import { Link, router } from '@inertiajs/vue3';
 
+import { useSwal } from '@/composables/useSwal';
+
 interface User {
     name: string;
 }
@@ -87,8 +89,20 @@ const href = () => {
     router.visit('plans/create');
 };
 
-const destroy = (id: number): void => {
-    router.delete(`/plans/${id}`);
+const swal = useSwal();
+
+const destroy = async (id: number): Promise<void> => {
+    const result = await swal.fire({
+        title: 'Do you want to delete the plan?',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, Delete it',
+        icon: 'question',
+        confirmButtonColor: '#465fff',
+    });
+
+    if (result.isConfirmed) {
+        router.delete(`/plans/${id}`);
+    }
 };
 
 defineProps<Props>();

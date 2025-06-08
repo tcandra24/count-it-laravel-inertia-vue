@@ -5,7 +5,7 @@
                 <img src="/images/user/owner.jpg" alt="User" />
             </span>
 
-            <span class="text-theme-sm mr-1 block font-medium">Musharof </span>
+            <span class="text-theme-sm mr-1 block font-medium">{{ user.name }}</span>
 
             <ChevronDownIcon :class="{ 'rotate-180': dropdownOpen }" />
         </button>
@@ -16,8 +16,8 @@
             class="shadow-theme-lg dark:bg-gray-dark absolute right-0 mt-[17px] flex w-[260px] flex-col rounded-2xl border border-gray-200 bg-white p-3 dark:border-gray-800"
         >
             <div>
-                <span class="text-theme-sm block font-medium text-gray-700 dark:text-gray-400"> Musharof Chowdhury </span>
-                <span class="text-theme-xs mt-0.5 block text-gray-500 dark:text-gray-400"> randomuser@pimjo.com </span>
+                <span class="text-theme-sm block font-medium text-gray-700 dark:text-gray-400"> {{ user.name }} </span>
+                <span class="text-theme-xs mt-0.5 block text-gray-500 dark:text-gray-400"> {{ user.email }} </span>
             </div>
 
             <ul class="flex flex-col gap-1 border-b border-gray-200 pt-4 pb-3 dark:border-gray-800">
@@ -48,7 +48,8 @@
 </template>
 
 <script setup lang="ts">
-import { Link } from '@inertiajs/vue3';
+import { type SharedData, type User } from '@/types';
+import { Link, usePage } from '@inertiajs/vue3';
 import { onMounted, onUnmounted, ref } from 'vue';
 import { ChevronDownIcon, InfoCircleIcon, LogoutIcon, SettingsIcon, UserCircleIcon } from '../icons';
 
@@ -74,6 +75,9 @@ const handleClickOutside = (event) => {
         closeDropdown();
     }
 };
+
+const page = usePage<SharedData>();
+const user = page.props.auth.user as User;
 
 onMounted(() => {
     document.addEventListener('click', handleClickOutside);
