@@ -149,7 +149,6 @@
                     </div>
                 </div>
             </nav>
-            <SidebarWidget v-if="isExpanded || isHovered || isMobileOpen" />
         </div>
     </aside>
 </template>
@@ -161,6 +160,7 @@ import { computed } from 'vue';
 
 import { useSidebar } from '../composables/useSidebar';
 import {
+    ArchiveIcon,
     CalenderIcon,
     ChevronDownIcon,
     GridIcon,
@@ -173,7 +173,6 @@ import {
     UserCircleIcon,
 } from '../icons';
 import BoxCubeIcon from '../icons/BoxCubeIcon.vue';
-import SidebarWidget from './SidebarWidget.vue';
 
 // const route = useRoute();
 
@@ -192,6 +191,11 @@ const menuGroups = [
                 icon: ListIcon,
                 name: 'Plans',
                 path: '/plans',
+            },
+            {
+                icon: ArchiveIcon,
+                name: 'Realizations',
+                path: '/realizations',
             },
             {
                 icon: CalenderIcon,

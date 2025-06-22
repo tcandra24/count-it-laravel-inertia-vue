@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('realizations', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('plan_detail_id');
+            $table->unsignedBigInteger('plan_detail_id')->nullable();
             $table->decimal('qty')->default(0);
             $table->decimal('price');
             $table->decimal('total');

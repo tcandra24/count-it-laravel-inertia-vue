@@ -55,24 +55,6 @@ createInertiaApp({
                         const allPermissions = this.$page.props.auth.permissions as Record<string, boolean>;
                         return permissions.some((item) => allPermissions[item]);
                     },
-                    monthName: function (month: number): string {
-                        const months = [
-                            '',
-                            'January',
-                            'Febuary',
-                            'March',
-                            'April',
-                            'Mei',
-                            'Juni',
-                            'July',
-                            'Agustus',
-                            'September',
-                            'October',
-                            'November',
-                            'December',
-                        ];
-                        return months[month];
-                    },
                 },
             })
             .use(plugin)

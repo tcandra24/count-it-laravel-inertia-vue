@@ -2,7 +2,7 @@
     <DefaultLayout>
         <Breadcrumb :pageTitle="'Create Plans'"></Breadcrumb>
         <Card title="Create New">
-            <div class="space-y-6">
+            <div class="flex w-full gap-5 space-y-6">
                 <!-- Select Input -->
                 <div class="w-1/4">
                     <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400"> Month </label>
@@ -212,9 +212,8 @@
                         </span>
                     </div>
                 </div> -->
-
-                <ButtonAction size="sm" variant="primary" @click="submit">Submit</ButtonAction>
             </div>
+            <ButtonAction size="sm" variant="primary" @click="submit">Submit</ButtonAction>
         </Card>
         <Card title="List of Detail" class="mt-5">
             <ButtonAction size="sm" variant="primary" @click="add()">Add Detail</ButtonAction>

@@ -13,6 +13,7 @@ import DocsIcon from './DocsIcon.vue';
 import DraftIcon from './DraftIcon.vue';
 import ErrorHexaIcon from './ErrorHexaIcon.vue';
 import ErrorIcon from './ErrorIcon.vue';
+import EyeIcon from './EyeIcon.vue';
 import FlagIcon from './FlagIcon.vue';
 import FolderIcon from './FolderIcon.vue';
 import GridIcon from './GridIcon.vue';
@@ -63,6 +64,7 @@ export {
     DraftIcon,
     ErrorHexaIcon,
     ErrorIcon,
+    EyeIcon,
     FlagIcon,
     FolderIcon,
     GridIcon,

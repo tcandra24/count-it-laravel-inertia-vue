@@ -15,6 +15,8 @@ class Realization extends Model
         'price',
         'total',
         'image',
+        'month',
+        'year',
     ];
 
     public function plan_detail()

@@ -68,6 +68,15 @@ class PlanController extends Controller
     }
 
     /**
+     * Display the specified resource.
+     */
+    public function show(Plan $plan)
+    {
+        $plan->load(['detail']);
+        return Inertia::render('plans/Show', ['plan' => $plan]);
+    }
+
+    /**
      * Show the form for editing the specified resource.
      */
     public function edit(Plan $plan)
