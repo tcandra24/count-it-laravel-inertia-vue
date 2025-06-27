@@ -10,6 +10,7 @@ import CheckIcon from './CheckIcon.vue';
 import ChevronDownIcon from './ChevronDownIcon.vue';
 import ChevronRightIcon from './ChevronRightIcon.vue';
 import DocsIcon from './DocsIcon.vue';
+import DoorOpen from './DoorOpen.vue';
 import DraftIcon from './DraftIcon.vue';
 import ErrorHexaIcon from './ErrorHexaIcon.vue';
 import ErrorIcon from './ErrorIcon.vue';
@@ -37,6 +38,7 @@ import PlusIcon from './PlusIcon.vue';
 import RefreshIcon from './RefreshIcon.vue';
 import SendIcon from './SendIcon.vue';
 import SettingsIcon from './SettingsIcon.vue';
+import ShieldIcon from './ShieldIcon.vue';
 import StaredIcon from './StaredIcon.vue';
 import SuccessIcon from './SuccessIcon.vue';
 import SupportIcon from './SupportIcon.vue';
@@ -61,6 +63,7 @@ export {
     ChevronDownIcon,
     ChevronRightIcon,
     DocsIcon,
+    DoorOpen,
     DraftIcon,
     ErrorHexaIcon,
     ErrorIcon,
@@ -88,6 +91,7 @@ export {
     RefreshIcon,
     SendIcon,
     SettingsIcon,
+    ShieldIcon,
     StaredIcon,
     SuccessIcon,
     SupportIcon,

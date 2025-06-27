@@ -2,7 +2,9 @@
     <DefaultLayout>
         <Breadcrumb :pageTitle="'Realizations'"></Breadcrumb>
         <Card title="List of Realizations">
-            <ButtonAction size="sm" variant="primary" :startIcon="PlusIcon" :onClick="href">Add</ButtonAction>
+            <ButtonAction v-if="can(['transaction.realizations.create'])" size="sm" variant="primary" :startIcon="PlusIcon" :onClick="href"
+                >Add</ButtonAction
+            >
             <TableList>
                 <template #header>
                     <tr class="border-b border-gray-200 dark:border-gray-700">
@@ -29,8 +31,10 @@
                 <template #body>
                     <template v-if="realizations.length > 0">
                         <tr v-for="(realization, index) in realizations" :key="index" class="border-t border-gray-100 dark:border-gray-800">
-                            <td class="px-5 py-4 font-bold sm:px-6">
-                                {{ realization.plan_detail ? realization.plan_detail.name : 'Other' }}
+                            <td class="px-5 py-4 sm:px-6">
+                                <p class="text-theme-sm text-gray-500 dark:text-gray-400">
+                                    {{ realization.plan_detail ? realization.plan_detail.name : 'Other' }}
+                                </p>
                             </td>
                             <td class="px-5 py-4 sm:px-6">
                                 <p class="text-theme-sm text-gray-500 dark:text-gray-400">{{ realization.month }} / {{ realization.year }}</p>
@@ -46,10 +50,16 @@
                             </td>
                             <td class="px-5 py-4 sm:px-6">
                                 <div class="flex gap-2">
-                                    <Link :href="`/realizations/${realization.id}/edit`">
+                                    <Link v-if="can(['transaction.realizations.edit'])" :href="`/realizations/${realization.id}/edit`">
                                         <Button size="sm" variant="outline" :startIcon="PencilIcon" />
                                     </Link>
-                                    <Button size="sm" variant="outline" :startIcon="TrashIcon" :onClick="() => destroy(realization.id)" />
+                                    <Button
+                                        v-if="can(['transaction.realizations.destroy'])"
+                                        size="sm"
+                                        variant="outline"
+                                        :startIcon="TrashIcon"
+                                        :onClick="() => destroy(realization.id)"
+                                    />
                                 </div>
                             </td>
                         </tr>
@@ -81,6 +91,7 @@ import { moneyFormat } from '@/composables/useHelpers';
 
 import { Link, router } from '@inertiajs/vue3';
 
+import { usePermissions } from '@/composables/usePermissions';
 import { useSwal } from '@/composables/useSwal';
 import { useToast } from 'vue-toastification';
 
@@ -125,6 +136,7 @@ const href = () => {
 
 const toast = useToast();
 const swal = useSwal();
+const { can } = usePermissions();
 
 const destroy = async (id: number): Promise<void> => {
     const result = await swal.fire({

@@ -38,114 +38,116 @@
             <nav class="mb-6">
                 <div class="flex flex-col gap-4">
                     <div v-for="(menuGroup, groupIndex) in menuGroups" :key="groupIndex">
-                        <h2
-                            :class="[
-                                'mb-4 flex text-xs leading-[20px] text-gray-400 uppercase',
-                                !isExpanded && !isHovered ? 'lg:justify-center' : 'justify-start',
-                            ]"
-                        >
-                            <template v-if="isExpanded || isHovered || isMobileOpen">
-                                {{ menuGroup.title }}
-                            </template>
-                            <HorizontalDots v-else />
-                        </h2>
-                        <ul class="flex flex-col gap-4">
-                            <li v-for="(item, index) in menuGroup.items" :key="item.name">
-                                <button
-                                    v-if="item.subItems"
-                                    @click="toggleSubmenu(groupIndex, index)"
-                                    :class="[
-                                        'menu-item group w-full',
-                                        {
-                                            'menu-item-active': isSubmenuOpen(groupIndex, index),
-                                            'menu-item-inactive': !isSubmenuOpen(groupIndex, index),
-                                        },
-                                        !isExpanded && !isHovered ? 'lg:justify-center' : 'lg:justify-start',
-                                    ]"
-                                >
-                                    <span :class="[isSubmenuOpen(groupIndex, index) ? 'menu-item-icon-active' : 'menu-item-icon-inactive']">
-                                        <component :is="item.icon" />
-                                    </span>
-                                    <span v-if="isExpanded || isHovered || isMobileOpen" class="menu-item-text">{{ item.name }}</span>
-                                    <ChevronDownIcon
-                                        v-if="isExpanded || isHovered || isMobileOpen"
+                        <div v-if="can(menuGroup.permissions)">
+                            <h2
+                                :class="[
+                                    'mb-4 flex text-xs leading-[20px] text-gray-400 uppercase',
+                                    !isExpanded && !isHovered ? 'lg:justify-center' : 'justify-start',
+                                ]"
+                            >
+                                <template v-if="isExpanded || isHovered || isMobileOpen">
+                                    {{ menuGroup.title }}
+                                </template>
+                                <HorizontalDots v-else />
+                            </h2>
+                            <ul class="flex flex-col gap-4">
+                                <li v-for="(item, index) in menuGroup.items" :key="item.name">
+                                    <button
+                                        v-if="item.subItems"
+                                        @click="toggleSubmenu(groupIndex, index)"
                                         :class="[
-                                            'ml-auto h-5 w-5 transition-transform duration-200',
+                                            'menu-item group w-full',
                                             {
-                                                'text-brand-500 rotate-180': isSubmenuOpen(groupIndex, index),
+                                                'menu-item-active': isSubmenuOpen(groupIndex, index),
+                                                'menu-item-inactive': !isSubmenuOpen(groupIndex, index),
+                                            },
+                                            !isExpanded && !isHovered ? 'lg:justify-center' : 'lg:justify-start',
+                                        ]"
+                                    >
+                                        <span :class="[isSubmenuOpen(groupIndex, index) ? 'menu-item-icon-active' : 'menu-item-icon-inactive']">
+                                            <component :is="item.icon" />
+                                        </span>
+                                        <span v-if="isExpanded || isHovered || isMobileOpen" class="menu-item-text">{{ item.name }}</span>
+                                        <ChevronDownIcon
+                                            v-if="isExpanded || isHovered || isMobileOpen"
+                                            :class="[
+                                                'ml-auto h-5 w-5 transition-transform duration-200',
+                                                {
+                                                    'text-brand-500 rotate-180': isSubmenuOpen(groupIndex, index),
+                                                },
+                                            ]"
+                                        />
+                                    </button>
+                                    <Link
+                                        v-else-if="item.path && can([item.permission])"
+                                        :href="item.path"
+                                        :class="[
+                                            'menu-item group',
+                                            {
+                                                'menu-item-active': isActive(item.path),
+                                                'menu-item-inactive': !isActive(item.path),
                                             },
                                         ]"
-                                    />
-                                </button>
-                                <Link
-                                    v-else-if="item.path"
-                                    :href="item.path"
-                                    :class="[
-                                        'menu-item group',
-                                        {
-                                            'menu-item-active': isActive(item.path),
-                                            'menu-item-inactive': !isActive(item.path),
-                                        },
-                                    ]"
-                                >
-                                    <span :class="[isActive(item.path) ? 'menu-item-icon-active' : 'menu-item-icon-inactive']">
-                                        <component :is="item.icon" />
-                                    </span>
-                                    <span v-if="isExpanded || isHovered || isMobileOpen" class="menu-item-text">{{ item.name }}</span>
-                                </Link>
-                                <transition
-                                    @enter="startTransition"
-                                    @after-enter="endTransition"
-                                    @before-leave="startTransition"
-                                    @after-leave="endTransition"
-                                >
-                                    <div v-show="isSubmenuOpen(groupIndex, index) && (isExpanded || isHovered || isMobileOpen)">
-                                        <ul class="mt-2 ml-9 space-y-1">
-                                            <li v-for="subItem in item.subItems" :key="subItem.name">
-                                                <Link
-                                                    :href="subItem.path"
-                                                    :class="[
-                                                        'menu-dropdown-item',
-                                                        {
-                                                            'menu-dropdown-item-active': isActive(subItem.path),
-                                                            'menu-dropdown-item-inactive': !isActive(subItem.path),
-                                                        },
-                                                    ]"
-                                                >
-                                                    {{ subItem.name }}
-                                                    <span class="ml-auto flex items-center gap-1">
-                                                        <span
-                                                            v-if="subItem.new"
-                                                            :class="[
-                                                                'menu-dropdown-badge',
-                                                                {
-                                                                    'menu-dropdown-badge-active': isActive(subItem.path),
-                                                                    'menu-dropdown-badge-inactive': !isActive(subItem.path),
-                                                                },
-                                                            ]"
-                                                        >
-                                                            new
+                                    >
+                                        <span :class="[isActive(item.path) ? 'menu-item-icon-active' : 'menu-item-icon-inactive']">
+                                            <component :is="item.icon" />
+                                        </span>
+                                        <span v-if="isExpanded || isHovered || isMobileOpen" class="menu-item-text">{{ item.name }}</span>
+                                    </Link>
+                                    <transition
+                                        @enter="startTransition"
+                                        @after-enter="endTransition"
+                                        @before-leave="startTransition"
+                                        @after-leave="endTransition"
+                                    >
+                                        <div v-show="isSubmenuOpen(groupIndex, index) && (isExpanded || isHovered || isMobileOpen)">
+                                            <ul class="mt-2 ml-9 space-y-1">
+                                                <li v-for="subItem in item.subItems" :key="subItem.name">
+                                                    <Link
+                                                        :href="subItem.path"
+                                                        :class="[
+                                                            'menu-dropdown-item',
+                                                            {
+                                                                'menu-dropdown-item-active': isActive(subItem.path),
+                                                                'menu-dropdown-item-inactive': !isActive(subItem.path),
+                                                            },
+                                                        ]"
+                                                    >
+                                                        {{ subItem.name }}
+                                                        <span class="ml-auto flex items-center gap-1">
+                                                            <span
+                                                                v-if="subItem.new"
+                                                                :class="[
+                                                                    'menu-dropdown-badge',
+                                                                    {
+                                                                        'menu-dropdown-badge-active': isActive(subItem.path),
+                                                                        'menu-dropdown-badge-inactive': !isActive(subItem.path),
+                                                                    },
+                                                                ]"
+                                                            >
+                                                                new
+                                                            </span>
+                                                            <span
+                                                                v-if="subItem.pro"
+                                                                :class="[
+                                                                    'menu-dropdown-badge',
+                                                                    {
+                                                                        'menu-dropdown-badge-active': isActive(subItem.path),
+                                                                        'menu-dropdown-badge-inactive': !isActive(subItem.path),
+                                                                    },
+                                                                ]"
+                                                            >
+                                                                pro
+                                                            </span>
                                                         </span>
-                                                        <span
-                                                            v-if="subItem.pro"
-                                                            :class="[
-                                                                'menu-dropdown-badge',
-                                                                {
-                                                                    'menu-dropdown-badge-active': isActive(subItem.path),
-                                                                    'menu-dropdown-badge-inactive': !isActive(subItem.path),
-                                                                },
-                                                            ]"
-                                                        >
-                                                            pro
-                                                        </span>
-                                                    </span>
-                                                </Link>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </transition>
-                            </li>
-                        </ul>
+                                                    </Link>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </transition>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </nav>
@@ -154,112 +156,64 @@
 </template>
 
 <script setup lang="ts">
+import { usePermissions } from '@/composables/usePermissions';
 import { Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
-// import { useRoute } from 'vue-router';
 
 import { useSidebar } from '../composables/useSidebar';
-import {
-    ArchiveIcon,
-    CalenderIcon,
-    ChevronDownIcon,
-    GridIcon,
-    HorizontalDots,
-    ListIcon,
-    PageIcon,
-    PieChartIcon,
-    PlugInIcon,
-    TableIcon,
-    UserCircleIcon,
-} from '../icons';
-import BoxCubeIcon from '../icons/BoxCubeIcon.vue';
-
-// const route = useRoute();
+import { ArchiveIcon, ChevronDownIcon, DoorOpen, GridIcon, HorizontalDots, ListIcon, ShieldIcon, UserCircleIcon } from '../icons';
 
 const { isExpanded, isMobileOpen, isHovered, openSubmenu } = useSidebar();
+
+const { can } = usePermissions();
 
 const menuGroups = [
     {
         title: 'Menu',
+        permissions: ['dashboard.index', 'master.plans.index', 'transaction.realizations.index'],
         items: [
             {
                 icon: GridIcon,
                 name: 'Dashboard',
                 path: '/',
+                permission: 'dashboard.index',
             },
             {
                 icon: ListIcon,
                 name: 'Plans',
                 path: '/plans',
+                permission: 'master.plans.index',
             },
             {
                 icon: ArchiveIcon,
                 name: 'Realizations',
                 path: '/realizations',
-            },
-            {
-                icon: CalenderIcon,
-                name: 'Calendar',
-                path: '/calendar',
-            },
-            {
-                icon: UserCircleIcon,
-                name: 'User Profile',
-                path: '/profile',
-            },
-
-            {
-                name: 'Forms',
-                icon: ListIcon,
-                subItems: [{ name: 'Form Elements', path: '/form-elements', pro: false }],
-            },
-            {
-                name: 'Tables',
-                icon: TableIcon,
-                subItems: [{ name: 'Basic Tables', path: '/basic-tables', pro: false }],
-            },
-            {
-                name: 'Pages',
-                icon: PageIcon,
-                subItems: [
-                    { name: 'Black Page', path: '/blank', pro: false },
-                    { name: '404 Page', path: '/error-404', pro: false },
-                ],
+                permission: 'transaction.realizations.index',
             },
         ],
     },
     {
-        title: 'Others',
+        title: 'Settings',
+        permissions: ['setting.users.create', 'setting.roles.index', 'setting.permissions.index'],
         items: [
             {
-                icon: PieChartIcon,
-                name: 'Charts',
-                subItems: [
-                    { name: 'Line Chart', path: '/line-chart', pro: false },
-                    { name: 'Bar Chart', path: '/bar-chart', pro: false },
-                ],
+                icon: UserCircleIcon,
+                name: 'Users',
+                path: '/setting/users',
+                permission: 'setting.users.create',
             },
             {
-                icon: BoxCubeIcon,
-                name: 'Ui Elements',
-                subItems: [
-                    { name: 'Alerts', path: '/alerts', pro: false },
-                    { name: 'Avatars', path: '/avatars', pro: false },
-                    { name: 'Badge', path: '/badge', pro: false },
-                    { name: 'Buttons', path: '/buttons', pro: false },
-                    { name: 'Images', path: '/images', pro: false },
-                    { name: 'Videos', path: '/videos', pro: false },
-                ],
+                icon: ShieldIcon,
+                name: 'Roles',
+                path: '/setting/roles',
+                permission: 'setting.roles.index',
             },
             {
-                icon: PlugInIcon,
-                name: 'Authentication',
-                subItems: [
-                    { name: 'Signin', path: '/signin', pro: false },
-                    { name: 'Signup', path: '/signup', pro: false },
-                ],
+                icon: DoorOpen,
+                name: 'Permissions',
+                path: '/setting/permissions',
+                permission: 'setting.permissions.index',
             },
-            // ... Add other menu items here
         ],
     },
 ];

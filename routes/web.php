@@ -12,6 +12,12 @@ Route::group(['middleware' => ['auth']], function(){
 
     Route::resource('plans', App\Http\Controllers\Transactions\PlanController::class);
     Route::resource('realizations', App\Http\Controllers\Transactions\RealizationController::class, [ 'except' => [ 'show' ] ]);
+
+    Route::prefix('setting')->group(function(){
+        Route::resource('permissions', App\Http\Controllers\Settings\PermissionController::class, [ 'except' => [ 'show' ] ]);
+        Route::resource('roles', App\Http\Controllers\Settings\RoleController::class, [ 'except' => [ 'show' ] ]);
+        Route::resource('users', App\Http\Controllers\Settings\UserController::class, [ 'except' => [ 'show' ] ]);
+    });
 });
 
 // Route::get('/', function () {

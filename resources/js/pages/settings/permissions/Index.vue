@@ -1,19 +1,18 @@
 <template>
     <DefaultLayout>
-        <Breadcrumb :pageTitle="'Plans'"></Breadcrumb>
-        <Card title="List of Plans">
-            <ButtonAction v-if="can(['master.plans.create'])" size="sm" variant="primary" :startIcon="PlusIcon" :onClick="href">Add</ButtonAction>
+        <Breadcrumb :pageTitle="'Permissions'"></Breadcrumb>
+        <Card title="List of Permissions">
+            <ButtonAction v-if="can(['setting.permissions.create'])" size="sm" variant="primary" :startIcon="PlusIcon" :onClick="href"
+                >Add</ButtonAction
+            >
             <TableList>
                 <template #header>
                     <tr class="border-b border-gray-200 dark:border-gray-700">
                         <th class="w-3/11 px-5 py-3 text-left sm:px-6">
-                            <p class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Month</p>
+                            <p class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Name</p>
                         </th>
-                        <th class="w-2/11 px-5 py-3 text-left sm:px-6">
-                            <p class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Year</p>
-                        </th>
-                        <th class="w-2/11 px-5 py-3 text-left sm:px-6">
-                            <p class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">User</p>
+                        <th class="w-3/11 px-5 py-3 text-left sm:px-6">
+                            <p class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Guard Name</p>
                         </th>
                         <th class="w-2/11 px-5 py-3 text-left sm:px-6">
                             <p class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Action</p>
@@ -21,31 +20,25 @@
                     </tr>
                 </template>
                 <template #body>
-                    <template v-if="plans.length > 0">
-                        <tr v-for="(plan, index) in plans" :key="index" class="border-t border-gray-100 dark:border-gray-800">
+                    <template v-if="permissions.length > 0">
+                        <tr v-for="(permission, index) in permissions" :key="index" class="border-t border-gray-100 dark:border-gray-800">
                             <td class="px-5 py-4 sm:px-6">
-                                <p class="text-theme-sm text-gray-500 dark:text-gray-400">{{ monthName(plan.month) }}</p>
+                                <p class="text-theme-sm text-gray-500 dark:text-gray-400">{{ permission.name }}</p>
                             </td>
                             <td class="px-5 py-4 sm:px-6">
-                                <p class="text-theme-sm text-gray-500 dark:text-gray-400">{{ plan.year }}</p>
-                            </td>
-                            <td class="px-5 py-4 sm:px-6">
-                                <p class="text-theme-sm text-gray-500 dark:text-gray-400">{{ plan.user.name }}</p>
+                                <p class="text-theme-sm text-gray-500 dark:text-gray-400">{{ permission.guard_name }}</p>
                             </td>
                             <td class="px-5 py-4 sm:px-6">
                                 <div class="flex gap-2">
-                                    <Link :href="`/plans/${plan.id}`">
-                                        <Button size="sm" variant="outline" :startIcon="EyeIcon" />
-                                    </Link>
-                                    <Link v-if="can(['master.plans.edit'])" :href="`/plans/${plan.id}/edit`">
+                                    <Link v-if="can(['setting.permissions.edit'])" :href="`/setting/permissions/${permission.id}/edit`">
                                         <Button size="sm" variant="outline" :startIcon="PencilIcon" />
                                     </Link>
                                     <Button
-                                        v-if="can(['master.plans.destroy'])"
+                                        v-if="can(['setting.permissions.destroy'])"
                                         size="sm"
                                         variant="outline"
                                         :startIcon="TrashIcon"
-                                        :onClick="() => destroy(plan.id)"
+                                        :onClick="() => destroy(permission.id)"
                                     />
                                 </div>
                             </td>
@@ -53,8 +46,8 @@
                     </template>
                     <template v-else>
                         <tr>
-                            <td colspan="4" class="px-5 py-4 sm:px-6">
-                                <Alert variant="info" title="No Plans Data" message="Plans is Empty or Not Found" :showLink="false" />
+                            <td colspan="6" class="px-5 py-4 sm:px-6">
+                                <Alert variant="info" title="No Permissions Data" message="Permissions is Empty or Not Found" :showLink="false" />
                             </td>
                         </tr>
                     </template>
@@ -71,34 +64,27 @@ import Button from '@/components/Button.vue';
 import ButtonAction from '@/components/ButtonAction.vue';
 import Card from '@/components/Card.vue';
 import TableList from '@/components/TableList.vue';
-import { EyeIcon, PencilIcon, PlusIcon, TrashIcon } from '@/icons';
+import { PencilIcon, PlusIcon, TrashIcon } from '@/icons';
 import DefaultLayout from '@/layouts/Default.vue';
 
 import { Link, router } from '@inertiajs/vue3';
 
-import { monthName } from '@/composables/useHelpers';
 import { usePermissions } from '@/composables/usePermissions';
 import { useSwal } from '@/composables/useSwal';
 import { useToast } from 'vue-toastification';
 
-interface User {
-    name: string;
-}
-
-interface Plans {
+interface Permissions {
     id: number;
-    month: number;
-    year: number;
-    is_active: number;
-    user: User;
+    name: string;
+    guard_name: string;
 }
 
 interface Props {
-    plans: Array<Plans>;
+    permissions: Array<Permissions>;
 }
 
 const href = () => {
-    router.visit('plans/create');
+    router.visit('permissions/create');
 };
 
 const toast = useToast();
@@ -107,7 +93,7 @@ const { can } = usePermissions();
 
 const destroy = async (id: number): Promise<void> => {
     const result = await swal.fire({
-        title: 'Do you want to delete the plan?',
+        title: 'Do you want to delete the permission?',
         showCancelButton: true,
         confirmButtonText: 'Yes, Delete it',
         icon: 'question',
@@ -115,9 +101,9 @@ const destroy = async (id: number): Promise<void> => {
     });
 
     if (result.isConfirmed) {
-        router.delete(`/plans/${id}`, {
+        router.delete(`/setting/permissions/${id}`, {
             onSuccess: () => {
-                toast.success('Plan Delete Successfully!');
+                toast.success('Permission Delete Successfully!');
             },
             onError: (error) => {
                 console.log(error);

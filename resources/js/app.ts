@@ -49,14 +49,6 @@ createInertiaApp({
                     },
                 ),
         })
-            .mixin({
-                methods: {
-                    hasAnyPermission: function (permissions: string[]): boolean {
-                        const allPermissions = this.$page.props.auth.permissions as Record<string, boolean>;
-                        return permissions.some((item) => allPermissions[item]);
-                    },
-                },
-            })
             .use(plugin)
             .use(ZiggyVue)
             .use(Toast, {
