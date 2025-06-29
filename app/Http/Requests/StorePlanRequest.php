@@ -22,6 +22,7 @@ class StorePlanRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'category_id' => 'required',
             'month' => 'required',
             'year' => 'required',
             'details' => 'required',

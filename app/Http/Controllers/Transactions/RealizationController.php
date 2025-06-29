@@ -25,7 +25,7 @@ class RealizationController extends Controller
      */
     public function index()
     {
-        $realizations = Realization::with(['plan_detail', 'plan_detail.plan', 'plan_detail.plan.user'])->get();
+        $realizations = Realization::with(['plan_detail', 'plan_detail.plan', 'plan_detail.plan.user', 'plan_detail.plan.category'])->get();
 
         return Inertia::render('realizations/Index', ['realizations' => $realizations]);
     }
@@ -63,12 +63,12 @@ class RealizationController extends Controller
                     $year = $detail->plan->year;
                 }
 
-
                 $image = $request->file('image');
                 $image->storeAs('realizations', $image->hashName(), 'public');
 
                 Realization::create([
                     'plan_detail_id' => $plan_detial_id,
+                    'name' => $request->name,
                     'qty' => $request->qty,
                     'price' => $request->price,
                     'total' => $request->qty * $request->price,
@@ -110,7 +110,7 @@ class RealizationController extends Controller
      */
     public function update(UpdateRealizationRequest $request, Realization $realization)
     {
-        try {
+        // try {
             DB::transaction(function() use ($request, $realization){
                 $now = Carbon::now();
 
@@ -127,6 +127,7 @@ class RealizationController extends Controller
 
                 $data = [
                     'plan_detail_id' => $plan_detial_id,
+                    'name' => $request->name,
                     'qty' => $request->qty,
                     'price' => $request->price,
                     'total' => $request->qty * $request->price,
@@ -147,9 +148,9 @@ class RealizationController extends Controller
             });
 
             return redirect()->route('realizations.index');
-        } catch (\Exception $e) {
-            return back();
-        }
+        // } catch (\Exception $e) {
+        //     return back();
+        // }
     }
 
     /**

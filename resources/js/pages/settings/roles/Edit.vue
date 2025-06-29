@@ -112,7 +112,7 @@ const submit = async (): Promise<void> => {
             },
             {
                 onSuccess: () => {
-                    toast.success('Role Added Successfully!');
+                    toast.success('Role Updated Successfully!');
                 },
                 onError: (error) => {
                     console.log(error);

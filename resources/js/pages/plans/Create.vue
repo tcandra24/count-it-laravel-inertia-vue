@@ -3,7 +3,36 @@
         <Breadcrumb :pageTitle="'Create Plans'"></Breadcrumb>
         <Card title="Create New">
             <div class="flex w-full gap-5 space-y-6">
-                <!-- Select Input -->
+                <div class="w-1/4">
+                    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400"> Category </label>
+                    <div class="relative z-20 bg-transparent">
+                        <select
+                            v-model="formData.category_id"
+                            class="dark:bg-dark-900 shadow-theme-xs w-full appearance-none rounded-lg border bg-transparent px-4 py-2.5 pr-10 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"
+                            :class="{
+                                'text-gray-800 dark:text-white/90': formData.category_id,
+                                'border-error-300 focus:border-error-300 focus:ring-error-500/10 dark:border-error-700 dark:focus:border-error-800':
+                                    errors.category_id,
+                            }"
+                        >
+                            <option value="" disabled selected>Select Category</option>
+                            <option v-for="(category, index) in categories" :key="index" :value="category.id">{{ category.name }}</option>
+                        </select>
+                        <span class="pointer-events-none absolute top-1/2 right-4 z-30 -translate-y-1/2 text-gray-500 dark:text-gray-400">
+                            <svg class="stroke-current" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M4.79175 7.396L10.0001 12.6043L15.2084 7.396"
+                                    stroke=""
+                                    stroke-width="1.5"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                />
+                            </svg>
+                        </span>
+                    </div>
+
+                    <p class="text-theme-xs text-error-500 mt-1.5" v-if="errors.category_id">{{ errors.category_id }}</p>
+                </div>
                 <div class="w-1/4">
                     <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400"> Month </label>
                     <div class="relative z-20 bg-transparent">
@@ -282,7 +311,7 @@
                                 />
                             </td>
                             <td class="px-5 py-4 sm:px-6">
-                                <p class="text-theme-sm text-gray-500 dark:text-gray-400">{{ detail.qty * detail.price }}</p>
+                                <p class="text-theme-sm text-gray-500 dark:text-gray-400">{{ moneyFormat(detail.qty * detail.price) }}</p>
                             </td>
                             <td class="px-5 py-4 sm:px-6">
                                 <Button size="sm" variant="outline" :startIcon="TrashIcon" :onClick="() => remove(detail.id)" />
@@ -312,13 +341,13 @@ import TableList from '@/components/TableList.vue';
 import { Input } from '@/components/ui/input';
 import { TrashIcon } from '@/icons';
 import DefaultLayout from '@/layouts/Default.vue';
-// import 'flatpickr/dist/flatpickr.css';
+
 import { useSwal } from '@/composables/useSwal';
 import { router } from '@inertiajs/vue3';
 import { reactive, ref } from 'vue';
 import { useToast } from 'vue-toastification';
-// import flatPickr from 'vue-flatpickr-component';
-// const showPassword = ref(false);
+
+import { moneyFormat } from '@/composables/useHelpers';
 
 interface Detail {
     id: number;
@@ -327,7 +356,13 @@ interface Detail {
     price: number;
 }
 
+interface Category {
+    id: number;
+    name: string;
+}
+
 interface Errors {
+    category_id: string;
     month: string;
     details: string;
     year: string;
@@ -335,12 +370,14 @@ interface Errors {
 
 interface Props {
     errors: Errors;
+    categories: Array<Category>;
 }
 
 const toast = useToast();
 const swal = useSwal();
 
 const formData = reactive({
+    category_id: null,
     month: '',
     year: '',
 });
@@ -375,8 +412,9 @@ const submit = async (): Promise<void> => {
 
     if (result.isConfirmed) {
         router.post(
-            '/plans',
+            '/master/plans',
             {
+                category_id: formData.category_id,
                 month: formData.month,
                 year: formData.year,
                 details: details.value,
@@ -395,24 +433,4 @@ const submit = async (): Promise<void> => {
 };
 
 defineProps<Props>();
-
-// const date = ref(null);
-
-// const flatpickrConfig = {
-//     dateFormat: 'Y-m-d',
-//     altInput: true,
-//     altFormat: 'F j, Y',
-//     wrap: true,
-// };
-
-// const flatpickrTimeConfig = {
-//     enableTime: true,
-//     noCalendar: true,
-//     dateFormat: 'H:i',
-//     time_24hr: false,
-//     minuteIncrement: 1,
-//     wrap: false,
-// };
-
-// const time = ref(null);
 </script>

@@ -23,6 +23,7 @@ class StoreRealizationRequest extends FormRequest
     {
         return [
             'plan_detail_id' => 'nullable',
+            'name' => 'required',
             'qty' => 'required',
             'price' => 'required',
             'image' => 'required',

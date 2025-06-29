@@ -7,6 +7,9 @@
                 <template #header>
                     <tr class="border-b border-gray-200 dark:border-gray-700">
                         <th class="w-3/11 px-5 py-3 text-left sm:px-6">
+                            <p class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Category</p>
+                        </th>
+                        <th class="w-3/11 px-5 py-3 text-left sm:px-6">
                             <p class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Month</p>
                         </th>
                         <th class="w-2/11 px-5 py-3 text-left sm:px-6">
@@ -24,6 +27,9 @@
                     <template v-if="plans.length > 0">
                         <tr v-for="(plan, index) in plans" :key="index" class="border-t border-gray-100 dark:border-gray-800">
                             <td class="px-5 py-4 sm:px-6">
+                                <p class="text-theme-sm text-gray-500 dark:text-gray-400">{{ plan.category.name }}</p>
+                            </td>
+                            <td class="px-5 py-4 sm:px-6">
                                 <p class="text-theme-sm text-gray-500 dark:text-gray-400">{{ monthName(plan.month) }}</p>
                             </td>
                             <td class="px-5 py-4 sm:px-6">
@@ -34,10 +40,10 @@
                             </td>
                             <td class="px-5 py-4 sm:px-6">
                                 <div class="flex gap-2">
-                                    <Link :href="`/plans/${plan.id}`">
+                                    <Link :href="`/master/plans/${plan.id}`">
                                         <Button size="sm" variant="outline" :startIcon="EyeIcon" />
                                     </Link>
-                                    <Link v-if="can(['master.plans.edit'])" :href="`/plans/${plan.id}/edit`">
+                                    <Link v-if="can(['master.plans.edit'])" :href="`/master/plans/${plan.id}/edit`">
                                         <Button size="sm" variant="outline" :startIcon="PencilIcon" />
                                     </Link>
                                     <Button
@@ -85,8 +91,13 @@ interface User {
     name: string;
 }
 
+interface Category {
+    name: string;
+}
+
 interface Plans {
     id: number;
+    category: Category;
     month: number;
     year: number;
     is_active: number;
@@ -98,7 +109,7 @@ interface Props {
 }
 
 const href = () => {
-    router.visit('plans/create');
+    router.visit('/master/plans/create');
 };
 
 const toast = useToast();
@@ -115,7 +126,7 @@ const destroy = async (id: number): Promise<void> => {
     });
 
     if (result.isConfirmed) {
-        router.delete(`/plans/${id}`, {
+        router.delete(`/master/plans/${id}`, {
             onSuccess: () => {
                 toast.success('Plan Delete Successfully!');
             },

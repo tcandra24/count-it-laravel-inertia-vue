@@ -1,7 +1,7 @@
 <template>
     <DefaultLayout>
-        <Breadcrumb :pageTitle="'Edit Permission'"></Breadcrumb>
-        <Card title="Edit">
+        <Breadcrumb :pageTitle="'Create Category'"></Breadcrumb>
+        <Card title="Create New">
             <div class="flex w-full gap-5 space-y-6">
                 <div class="w-1/4">
                     <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400"> Name </label>
@@ -19,24 +19,6 @@
                     </div>
 
                     <p class="text-theme-xs text-error-500 mt-1.5" v-if="errors.name">{{ errors.name }}</p>
-                </div>
-
-                <div class="w-1/4">
-                    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400"> Guard Name </label>
-                    <div class="relative z-20 bg-transparent">
-                        <Input
-                            id="guard_name"
-                            type="text"
-                            required
-                            autofocus
-                            :tabindex="1"
-                            autocomplete="guard_name"
-                            v-model="formData.guard_name"
-                            placeholder="Guard Name"
-                        />
-                    </div>
-
-                    <p class="text-theme-xs text-error-500 mt-1.5" v-if="errors.guard_name">{{ errors.guard_name }}</p>
                 </div>
             </div>
             <ButtonAction size="sm" variant="primary" @click="submit">Submit</ButtonAction>
@@ -58,38 +40,26 @@ import { useToast } from 'vue-toastification';
 
 interface Errors {
     name: string;
-    guard_name: string;
-}
-
-interface Permission {
-    id: number;
-    name: string;
-    guard_name: string;
 }
 
 interface Props {
     errors: Errors;
-    permission: Permission;
 }
 
 interface Input {
     name: string;
-    guard_name: string;
 }
 
 const toast = useToast();
 const swal = useSwal();
 
-const props = defineProps<Props>();
-
 const formData = reactive<Input>({
-    name: props.permission.name,
-    guard_name: props.permission.guard_name,
+    name: '',
 });
 
 const submit = async (): Promise<void> => {
     const result = await swal.fire({
-        title: 'Do you want to save the permission?',
+        title: 'Do you want to save the category?',
         showCancelButton: true,
         confirmButtonText: 'Yes, Save it',
         icon: 'question',
@@ -97,15 +67,14 @@ const submit = async (): Promise<void> => {
     });
 
     if (result.isConfirmed) {
-        router.put(
-            `/setting/permissions/${props.permission.id}`,
+        router.post(
+            '/master/categories',
             {
                 name: formData.name,
-                guard_name: formData.guard_name,
             },
             {
                 onSuccess: () => {
-                    toast.success('Permission Updated Successfully!');
+                    toast.success('Category Added Successfully!');
                 },
                 onError: (error) => {
                     console.log(error);
@@ -115,4 +84,6 @@ const submit = async (): Promise<void> => {
         );
     }
 };
+
+defineProps<Props>();
 </script>

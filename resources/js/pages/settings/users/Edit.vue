@@ -180,7 +180,7 @@ const submit = async (): Promise<void> => {
             },
             {
                 onSuccess: () => {
-                    toast.success('User Added Successfully!');
+                    toast.success('User Updated Successfully!');
                 },
                 onError: (error) => {
                     console.log(error);

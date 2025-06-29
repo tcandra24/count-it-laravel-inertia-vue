@@ -11,6 +11,7 @@ class Realization extends Model
 {
     protected $fillable = [
         'plan_detail_id',
+        'name',
         'qty',
         'price',
         'total',
@@ -22,6 +23,14 @@ class Realization extends Model
     public function plan_detail()
     {
         return $this->belongsTo(PlanDetail::class);
+    }
+
+    protected function name(): Attribute
+    {
+        return Attribute::make(
+            set: fn ($value) => strtolower($value),
+            get: fn ($value) => ucwords($value),
+        );
     }
 
     protected function image(): Attribute

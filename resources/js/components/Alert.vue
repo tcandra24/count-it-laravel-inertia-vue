@@ -12,9 +12,9 @@
 
                 <p class="text-sm text-gray-500 dark:text-gray-400">{{ message }}</p>
 
-                <router-link v-if="showLink" :to="linkHref" class="mt-3 inline-block text-sm font-medium text-gray-500 underline dark:text-gray-400">
+                <Link v-if="showLink" :href="linkHref" class="mt-3 inline-block text-sm font-medium text-gray-500 underline dark:text-gray-400">
                     {{ linkText }}
-                </router-link>
+                </Link>
             </div>
         </div>
     </div>
@@ -22,6 +22,7 @@
 
 <script setup lang="ts">
 import { ErrorIcon, InfoCircleIcon, SuccessIcon, WarningIcon } from '@/icons';
+import { Link } from '@inertiajs/vue3';
 
 interface AlertProps {
     variant: 'success' | 'error' | 'warning' | 'info';

@@ -5,21 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 
-class PlanDetail extends Model
+class Category extends Model
 {
     protected $fillable = [
-        'name',
-        'qty',
-        'price',
-        'total',
-        'is_active',
-        'plan_id'
+        'name'
     ];
-
-    public function plan()
-    {
-        return $this->belongsTo(Plan::class);
-    }
 
     protected function name(): Attribute
     {
@@ -28,4 +18,5 @@ class PlanDetail extends Model
             get: fn ($value) => ucwords($value),
         );
     }
+
 }

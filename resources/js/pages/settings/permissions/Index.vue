@@ -84,7 +84,7 @@ interface Props {
 }
 
 const href = () => {
-    router.visit('permissions/create');
+    router.visit('/setting/permissions/create');
 };
 
 const toast = useToast();

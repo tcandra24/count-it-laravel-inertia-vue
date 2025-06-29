@@ -9,6 +9,7 @@ use Inertia\Inertia;
 
 // Models
 use App\Models\Plan;
+use App\Models\Category;
 use App\Models\PlanDetail;
 
 // Requests
@@ -22,7 +23,7 @@ class PlanController extends Controller
      */
     public function index()
     {
-        $plans = Plan::with(['user'])->get();
+        $plans = Plan::with(['user', 'category'])->get();
 
         return Inertia::render('plans/Index', ['plans' => $plans]);
     }
@@ -32,7 +33,8 @@ class PlanController extends Controller
      */
     public function create()
     {
-        return Inertia::render('plans/Create');
+        $categories = Category::all();
+        return Inertia::render('plans/Create', ['categories' => $categories]);
     }
 
     /**
@@ -43,6 +45,7 @@ class PlanController extends Controller
         try {
             DB::transaction(function() use ($request){
                 $plan = Plan::create([
+                    'category_id' => $request->category_id,
                     'month' => $request->month,
                     'year' => $request->year,
                     'user_id' => Auth::user()->id,
@@ -72,7 +75,7 @@ class PlanController extends Controller
      */
     public function show(Plan $plan)
     {
-        $plan->load(['detail']);
+        $plan->load(['detail', 'category']);
         return Inertia::render('plans/Show', ['plan' => $plan]);
     }
 
@@ -82,7 +85,8 @@ class PlanController extends Controller
     public function edit(Plan $plan)
     {
         $plan->load(['detail']);
-        return Inertia::render('plans/Edit', ['plan' => $plan]);
+        $categories = Category::all();
+        return Inertia::render('plans/Edit', ['plan' => $plan, 'categories' => $categories]);
     }
 
     /**
@@ -93,6 +97,7 @@ class PlanController extends Controller
         try {
             DB::transaction(function() use ($request, $plan){
                 $plan->update([
+                    'category_id' => $request->category_id,
                     'month' => $request->month,
                     'year' => $request->year,
                     'user_id' => Auth::user()->id,

@@ -3,7 +3,13 @@
         <Breadcrumb :pageTitle="'Show Plans'"></Breadcrumb>
         <Card title="Detail Plan">
             <div class="flex w-full space-y-6">
-                <!-- Select Input -->
+                <div class="w-1/4">
+                    <div>
+                        <p class="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">Category</p>
+                        <p class="text-sm font-medium text-gray-800 dark:text-white/90">{{ plan.category.name }}</p>
+                    </div>
+                </div>
+
                 <div class="w-1/4">
                     <div>
                         <p class="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">Month</p>
@@ -95,8 +101,13 @@ interface Errors {
     year: string;
 }
 
+interface Category {
+    name: string;
+}
+
 interface Plans {
     id: number;
+    category: Category;
     month: number;
     year: number;
     is_active: number;

@@ -18,7 +18,7 @@
                 <img
                     v-if="isExpanded || isHovered || isMobileOpen"
                     class="dark:hidden"
-                    src="/images/logo/logo.svg"
+                    src="/images/logo/logo.png"
                     alt="Logo"
                     width="150"
                     height="40"
@@ -26,12 +26,12 @@
                 <img
                     v-if="isExpanded || isHovered || isMobileOpen"
                     class="hidden dark:block"
-                    src="/images/logo/logo-dark.svg"
+                    src="/images/logo/logo.png"
                     alt="Logo"
                     width="150"
                     height="40"
                 />
-                <img v-else src="/images/logo/logo-icon.svg" alt="Logo" width="32" height="32" />
+                <img v-else src="/images/logo/logo-icon.png" alt="Logo" width="32" height="32" />
             </Link>
         </div>
         <div class="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
@@ -161,7 +161,7 @@ import { Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 import { useSidebar } from '../composables/useSidebar';
-import { ArchiveIcon, ChevronDownIcon, DoorOpen, GridIcon, HorizontalDots, ListIcon, ShieldIcon, UserCircleIcon } from '../icons';
+import { ArchiveIcon, BoxIcon, ChevronDownIcon, DoorOpen, GridIcon, HorizontalDots, ListIcon, ShieldIcon, UserCircleIcon } from '../icons';
 
 const { isExpanded, isMobileOpen, isHovered, openSubmenu } = useSidebar();
 
@@ -170,7 +170,7 @@ const { can } = usePermissions();
 const menuGroups = [
     {
         title: 'Menu',
-        permissions: ['dashboard.index', 'master.plans.index', 'transaction.realizations.index'],
+        permissions: ['dashboard.index'],
         items: [
             {
                 icon: GridIcon,
@@ -178,22 +178,40 @@ const menuGroups = [
                 path: '/',
                 permission: 'dashboard.index',
             },
+        ],
+    },
+    {
+        title: 'Master',
+        permissions: ['master.categories.index', 'master.plans.index'],
+        items: [
+            {
+                icon: BoxIcon,
+                name: 'Categories',
+                path: '/master/categories',
+                permission: 'master.categories.index',
+            },
             {
                 icon: ListIcon,
                 name: 'Plans',
-                path: '/plans',
+                path: '/master/plans',
                 permission: 'master.plans.index',
             },
+        ],
+    },
+    {
+        title: 'Transaction',
+        permissions: ['transaction.realizations.index'],
+        items: [
             {
                 icon: ArchiveIcon,
                 name: 'Realizations',
-                path: '/realizations',
+                path: '/transaction/realizations',
                 permission: 'transaction.realizations.index',
             },
         ],
     },
     {
-        title: 'Settings',
+        title: 'Setting',
         permissions: ['setting.users.create', 'setting.roles.index', 'setting.permissions.index'],
         items: [
             {

@@ -3,7 +3,6 @@
         <Breadcrumb :pageTitle="'Create Realization'"></Breadcrumb>
         <Card title="Create New">
             <div class="flex w-full gap-5 space-y-6">
-                <!-- Select Input -->
                 <div class="w-1/4">
                     <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400"> Plan </label>
                     <div class="relative z-20 bg-transparent">
@@ -38,6 +37,23 @@
                 </div>
 
                 <div class="w-1/4">
+                    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400"> Name </label>
+                    <div class="relative z-20 bg-transparent">
+                        <Input
+                            id="name"
+                            type="text"
+                            required
+                            autofocus
+                            :tabindex="1"
+                            autocomplete="name"
+                            v-model="formData.name"
+                            placeholder="Name"
+                        />
+                    </div>
+
+                    <p class="text-theme-xs text-error-500 mt-1.5" v-if="errors.name">{{ errors.name }}</p>
+                </div>
+                <div class="w-1/6">
                     <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400"> Qty </label>
                     <div class="relative z-20 bg-transparent">
                         <Input id="qty" type="number" required autofocus :tabindex="1" autocomplete="qty" v-model="formData.qty" placeholder="Qty" />
@@ -63,7 +79,8 @@
 
                     <p class="text-theme-xs text-error-500 mt-1.5" v-if="errors.price">{{ errors.price }}</p>
                 </div>
-
+            </div>
+            <div class="flex w-full gap-5 space-y-6">
                 <div class="w-1/4">
                     <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400"> Image </label>
                     <div class="relative z-20 bg-transparent">
@@ -117,6 +134,7 @@ interface Plan {
 
 interface Errors {
     plan_detail_id: string;
+    name: string;
     qty: string;
     price: string;
     image: string;
@@ -129,6 +147,7 @@ interface Props {
 
 interface Input {
     plan_detail_id: number | null;
+    name: string;
     qty: number;
     price: number;
     image: File | null;
@@ -139,6 +158,7 @@ const swal = useSwal();
 
 const formData = reactive<Input>({
     plan_detail_id: null,
+    name: '',
     qty: 0,
     price: 0,
     image: null,
@@ -164,9 +184,10 @@ const submit = async (): Promise<void> => {
 
     if (result.isConfirmed) {
         router.post(
-            '/realizations',
+            '/transaction/realizations',
             {
                 plan_detail_id: formData.plan_detail_id,
+                name: formData.name,
                 qty: formData.qty,
                 price: formData.price,
                 image: formData.image,

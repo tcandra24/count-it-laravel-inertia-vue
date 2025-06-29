@@ -10,8 +10,14 @@ Route::get('/', function () {
 Route::group(['middleware' => ['auth']], function(){
     Route::get('dashboard', App\Http\Controllers\DashboardController::class)->name('dashboard.index');
 
-    Route::resource('plans', App\Http\Controllers\Transactions\PlanController::class);
-    Route::resource('realizations', App\Http\Controllers\Transactions\RealizationController::class, [ 'except' => [ 'show' ] ]);
+    Route::prefix('master')->group(function(){
+        Route::resource('categories', App\Http\Controllers\Master\CategoryController::class, [ 'except' => [ 'show' ] ]);
+        Route::resource('plans', App\Http\Controllers\Transactions\PlanController::class);
+    });
+
+    Route::prefix('transaction')->group(function(){
+        Route::resource('realizations', App\Http\Controllers\Transactions\RealizationController::class, [ 'except' => [ 'show' ] ]);
+    });
 
     Route::prefix('setting')->group(function(){
         Route::resource('permissions', App\Http\Controllers\Settings\PermissionController::class, [ 'except' => [ 'show' ] ]);

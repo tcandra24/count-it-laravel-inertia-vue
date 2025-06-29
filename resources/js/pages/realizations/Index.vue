@@ -12,6 +12,9 @@
                             <p class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Plan</p>
                         </th>
                         <th class="w-3/11 px-5 py-3 text-left sm:px-6">
+                            <p class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Name</p>
+                        </th>
+                        <th class="w-3/11 px-5 py-3 text-left sm:px-6">
                             <p class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Period</p>
                         </th>
                         <th class="w-2/11 px-5 py-3 text-left sm:px-6">
@@ -32,8 +35,16 @@
                     <template v-if="realizations.length > 0">
                         <tr v-for="(realization, index) in realizations" :key="index" class="border-t border-gray-100 dark:border-gray-800">
                             <td class="px-5 py-4 sm:px-6">
-                                <p class="text-theme-sm text-gray-500 dark:text-gray-400">
+                                <p class="text-theme-sm mb-2 text-gray-500 dark:text-gray-400">
                                     {{ realization.plan_detail ? realization.plan_detail.name : 'Other' }}
+                                </p>
+                                <Badge v-if="realization.plan_detail" color="success">
+                                    {{ realization.plan_detail.plan.category.name }}
+                                </Badge>
+                            </td>
+                            <td class="px-5 py-4 sm:px-6">
+                                <p class="text-theme-sm text-gray-500 dark:text-gray-400">
+                                    {{ realization.name }}
                                 </p>
                             </td>
                             <td class="px-5 py-4 sm:px-6">
@@ -50,7 +61,7 @@
                             </td>
                             <td class="px-5 py-4 sm:px-6">
                                 <div class="flex gap-2">
-                                    <Link v-if="can(['transaction.realizations.edit'])" :href="`/realizations/${realization.id}/edit`">
+                                    <Link v-if="can(['transaction.realizations.edit'])" :href="`/transaction/realizations/${realization.id}/edit`">
                                         <Button size="sm" variant="outline" :startIcon="PencilIcon" />
                                     </Link>
                                     <Button
@@ -66,7 +77,7 @@
                     </template>
                     <template v-else>
                         <tr>
-                            <td colspan="6" class="px-5 py-4 sm:px-6">
+                            <td colspan="7" class="px-5 py-4 sm:px-6">
                                 <Alert variant="info" title="No Realizations Data" message="Realizations is Empty or Not Found" :showLink="false" />
                             </td>
                         </tr>
@@ -79,6 +90,7 @@
 
 <script setup lang="ts">
 import Alert from '@/components/Alert.vue';
+import Badge from '@/components/Badge.vue';
 import Breadcrumb from '@/components/Breadcrumb.vue';
 import Button from '@/components/Button.vue';
 import ButtonAction from '@/components/ButtonAction.vue';
@@ -99,8 +111,13 @@ interface User {
     name: string;
 }
 
+interface Category {
+    name: string;
+}
+
 interface Plan {
     id: number;
+    category: Category;
     month: number;
     year: number;
     is_active: number;
@@ -118,6 +135,7 @@ interface PlanDetail {
 interface Realizations {
     id: number;
     plan_detail: PlanDetail | null;
+    name: string;
     qty: number;
     price: number;
     total: number;
@@ -131,7 +149,7 @@ interface Props {
 }
 
 const href = () => {
-    router.visit('realizations/create');
+    router.visit('/transaction/realizations/create');
 };
 
 const toast = useToast();
@@ -148,7 +166,7 @@ const destroy = async (id: number): Promise<void> => {
     });
 
     if (result.isConfirmed) {
-        router.delete(`/realizations/${id}`, {
+        router.delete(`/transaction/realizations/${id}`, {
             onSuccess: () => {
                 toast.success('Realization Delete Successfully!');
             },
