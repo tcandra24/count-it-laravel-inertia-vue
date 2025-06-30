@@ -161,7 +161,7 @@ import { Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 import { useSidebar } from '../composables/useSidebar';
-import { ArchiveIcon, BoxIcon, ChevronDownIcon, DoorOpen, GridIcon, HorizontalDots, ListIcon, ShieldIcon, UserCircleIcon } from '../icons';
+import { ArchiveIcon, BoxIcon, ChevronDownIcon, DoorOpen, GridIcon, HorizontalDots, ListIcon, MoneyIcon, ShieldIcon, UserCircleIcon } from '../icons';
 
 const { isExpanded, isMobileOpen, isHovered, openSubmenu } = useSidebar();
 
@@ -200,8 +200,14 @@ const menuGroups = [
     },
     {
         title: 'Transaction',
-        permissions: ['transaction.realizations.index'],
+        permissions: ['transaction.realizations.index', 'transaction.budgets.index'],
         items: [
+            {
+                icon: MoneyIcon,
+                name: 'Budgets',
+                path: '/transaction/budgets',
+                permission: 'transaction.budgets.index',
+            },
             {
                 icon: ArchiveIcon,
                 name: 'Realizations',

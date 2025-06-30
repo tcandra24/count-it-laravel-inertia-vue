@@ -12,6 +12,7 @@ class Realization extends Model
     protected $fillable = [
         'plan_detail_id',
         'name',
+        'note',
         'qty',
         'price',
         'total',
@@ -36,7 +37,7 @@ class Realization extends Model
     protected function image(): Attribute
     {
         return Attribute::make(
-            get: fn ($value) => url('/storage/realization/' . $value),
+            get: fn ($value) => url('/storage/realizations/' . $value),
         );
     }
 

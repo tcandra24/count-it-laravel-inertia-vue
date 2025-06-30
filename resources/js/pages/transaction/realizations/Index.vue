@@ -61,6 +61,9 @@
                             </td>
                             <td class="px-5 py-4 sm:px-6">
                                 <div class="flex gap-2">
+                                    <Link :href="`/transaction/realizations/${realization.id}`">
+                                        <Button size="sm" variant="outline" :startIcon="EyeIcon" />
+                                    </Link>
                                     <Link v-if="can(['transaction.realizations.edit'])" :href="`/transaction/realizations/${realization.id}/edit`">
                                         <Button size="sm" variant="outline" :startIcon="PencilIcon" />
                                     </Link>
@@ -96,7 +99,7 @@ import Button from '@/components/Button.vue';
 import ButtonAction from '@/components/ButtonAction.vue';
 import Card from '@/components/Card.vue';
 import TableList from '@/components/TableList.vue';
-import { PencilIcon, PlusIcon, TrashIcon } from '@/icons';
+import { EyeIcon, PencilIcon, PlusIcon, TrashIcon } from '@/icons';
 import DefaultLayout from '@/layouts/Default.vue';
 
 import { moneyFormat } from '@/composables/useHelpers';

@@ -59,7 +59,7 @@
                     </template>
                     <template v-else>
                         <tr>
-                            <td colspan="4" class="px-5 py-4 sm:px-6">
+                            <td colspan="5" class="px-5 py-4 sm:px-6">
                                 <Alert variant="info" title="No Plans Data" message="Plans is Empty or Not Found" :showLink="false" />
                             </td>
                         </tr>

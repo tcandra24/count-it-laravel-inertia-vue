@@ -27,7 +27,7 @@ class RealizationController extends Controller
     {
         $realizations = Realization::with(['plan_detail', 'plan_detail.plan', 'plan_detail.plan.user', 'plan_detail.plan.category'])->get();
 
-        return Inertia::render('realizations/Index', ['realizations' => $realizations]);
+        return Inertia::render('transaction/realizations/Index', ['realizations' => $realizations]);
     }
 
     /**
@@ -40,7 +40,7 @@ class RealizationController extends Controller
             ->where('year', $now->year)
             ->get();
 
-         return Inertia::render('realizations/Create', ['plans' => $plans]);
+        return Inertia::render('transaction/realizations/Create', ['plans' => $plans]);
     }
 
     /**
@@ -69,6 +69,7 @@ class RealizationController extends Controller
                 Realization::create([
                     'plan_detail_id' => $plan_detial_id,
                     'name' => $request->name,
+                    'note' => $request->note,
                     'qty' => $request->qty,
                     'price' => $request->price,
                     'total' => $request->qty * $request->price,
@@ -89,7 +90,8 @@ class RealizationController extends Controller
      */
     public function show(Realization $realization)
     {
-        //
+        $realization->load(['plan_detail', 'plan_detail.plan', 'plan_detail.plan.category']);
+        return Inertia::render('transaction/realizations/Show', ['realization' => $realization]);
     }
 
     /**
@@ -102,7 +104,7 @@ class RealizationController extends Controller
             ->where('year', $now->year)
             ->get();
 
-         return Inertia::render('realizations/Edit', ['plans' => $plans, 'realization' => $realization]);
+         return Inertia::render('transaction/realizations/Edit', ['plans' => $plans, 'realization' => $realization]);
     }
 
     /**
@@ -110,7 +112,7 @@ class RealizationController extends Controller
      */
     public function update(UpdateRealizationRequest $request, Realization $realization)
     {
-        // try {
+        try {
             DB::transaction(function() use ($request, $realization){
                 $now = Carbon::now();
 
@@ -128,6 +130,7 @@ class RealizationController extends Controller
                 $data = [
                     'plan_detail_id' => $plan_detial_id,
                     'name' => $request->name,
+                    'note' => $request->note,
                     'qty' => $request->qty,
                     'price' => $request->price,
                     'total' => $request->qty * $request->price,
@@ -148,9 +151,9 @@ class RealizationController extends Controller
             });
 
             return redirect()->route('realizations.index');
-        // } catch (\Exception $e) {
-        //     return back();
-        // }
+        } catch (\Exception $e) {
+            return back();
+        }
     }
 
     /**

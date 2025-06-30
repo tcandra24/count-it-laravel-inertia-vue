@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Transactions;
+namespace App\Http\Controllers\Master;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -25,7 +25,7 @@ class PlanController extends Controller
     {
         $plans = Plan::with(['user', 'category'])->get();
 
-        return Inertia::render('plans/Index', ['plans' => $plans]);
+        return Inertia::render('master/plans/Index', ['plans' => $plans]);
     }
 
     /**
@@ -34,7 +34,7 @@ class PlanController extends Controller
     public function create()
     {
         $categories = Category::all();
-        return Inertia::render('plans/Create', ['categories' => $categories]);
+        return Inertia::render('master/plans/Create', ['categories' => $categories]);
     }
 
     /**
@@ -76,7 +76,7 @@ class PlanController extends Controller
     public function show(Plan $plan)
     {
         $plan->load(['detail', 'category']);
-        return Inertia::render('plans/Show', ['plan' => $plan]);
+        return Inertia::render('master/plans/Show', ['plan' => $plan]);
     }
 
     /**
@@ -86,7 +86,7 @@ class PlanController extends Controller
     {
         $plan->load(['detail']);
         $categories = Category::all();
-        return Inertia::render('plans/Edit', ['plan' => $plan, 'categories' => $categories]);
+        return Inertia::render('master/plans/Edit', ['plan' => $plan, 'categories' => $categories]);
     }
 
     /**
