@@ -24,6 +24,7 @@ class UpdateRealizationRequest extends FormRequest
         return [
             'plan_detail_id' => 'nullable',
             'name' => 'required',
+            'note' => 'nullable',
             'qty' => 'required',
             'price' => 'required',
             'image' => 'nullable',

@@ -217,9 +217,10 @@ const submit = async (): Promise<void> => {
     });
 
     if (result.isConfirmed) {
-        router.put(
+        router.post(
             `/transaction/realizations/${props.realization.id}`,
             {
+                _method: "PUT",
                 plan_detail_id: formData.plan_detail_id,
                 name: formData.name,
                 note: formData.note,
