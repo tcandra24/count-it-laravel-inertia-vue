@@ -35,6 +35,8 @@
 
                     <p class="text-theme-xs text-error-500 mt-1.5" v-if="errors.plan_detail_id">{{ errors.plan_detail_id }}</p>
                 </div>
+            </div>
+            <div class="flex w-full gap-5 space-y-6">
                 <div class="w-1/4">
                     <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400"> Name </label>
                     <div class="relative z-20 bg-transparent">
@@ -59,6 +61,37 @@
                     </div>
 
                     <p class="text-theme-xs text-error-500 mt-1.5" v-if="errors.qty">{{ errors.qty }}</p>
+                </div>
+
+                <div class="w-1/6">
+                    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400"> Unit </label>
+                    <div class="relative z-20 bg-transparent">
+                        <select
+                            v-model="formData.unit_id"
+                            class="dark:bg-dark-900 shadow-theme-xs w-full appearance-none rounded-lg border bg-transparent px-4 py-2.5 pr-10 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"
+                            :class="{
+                                'text-gray-800 dark:text-white/90': formData.unit_id,
+                                'border-error-300 focus:border-error-300 focus:ring-error-500/10 dark:border-error-700 dark:focus:border-error-800':
+                                    errors.unit_id,
+                            }"
+                        >
+                            <option value="" disabled selected>Select Unit</option>
+                            <option v-for="unit of units" :key="unit.id" :value="unit.id">{{ unit.name }}</option>
+                        </select>
+                        <span class="pointer-events-none absolute top-1/2 right-4 z-30 -translate-y-1/2 text-gray-500 dark:text-gray-400">
+                            <svg class="stroke-current" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M4.79175 7.396L10.0001 12.6043L15.2084 7.396"
+                                    stroke=""
+                                    stroke-width="1.5"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                />
+                            </svg>
+                        </span>
+                    </div>
+
+                    <p class="text-theme-xs text-error-500 mt-1.5" v-if="errors.unit_id">{{ errors.unit_id }}</p>
                 </div>
 
                 <div class="w-1/4">
@@ -150,9 +183,15 @@ interface Plan {
     detail: Array<PlanDetail>;
 }
 
+interface Unit {
+    id: number;
+    name: string;
+}
+
 interface Realization {
     id: number;
     plan_detail_id: number;
+    unit_id: number;
     name: string;
     note: string;
     qty: number;
@@ -162,6 +201,7 @@ interface Realization {
 
 interface Errors {
     plan_detail_id: string;
+    unit_id: string;
     name: string;
     note: string;
     qty: string;
@@ -173,10 +213,12 @@ interface Props {
     errors: Errors;
     plans: Array<Plan>;
     realization: Realization;
+    units: Array<Unit>;
 }
 
 interface Input {
     plan_detail_id: number | null;
+    unit_id: number | null;
     name: string;
     note: string;
     qty: number;
@@ -191,6 +233,7 @@ const swal = useSwal();
 
 const formData = reactive<Input>({
     plan_detail_id: props.realization.plan_detail_id,
+    unit_id: props.realization.unit_id,
     name: props.realization.name,
     note: props.realization.note,
     qty: props.realization.qty,
@@ -220,8 +263,9 @@ const submit = async (): Promise<void> => {
         router.post(
             `/transaction/realizations/${props.realization.id}`,
             {
-                _method: "PUT",
+                _method: 'PUT',
                 plan_detail_id: formData.plan_detail_id,
+                unit_id: formData.unit_id,
                 name: formData.name,
                 note: formData.note,
                 qty: formData.qty,

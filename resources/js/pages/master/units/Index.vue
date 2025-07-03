@@ -1,10 +1,8 @@
 <template>
     <DefaultLayout>
-        <Breadcrumb :pageTitle="'Categories'"></Breadcrumb>
-        <Card title="List of Categories">
-            <ButtonAction v-if="can(['master.categories.create'])" size="sm" variant="primary" :startIcon="PlusIcon" :onClick="href"
-                >Add</ButtonAction
-            >
+        <Breadcrumb :pageTitle="'Units'"></Breadcrumb>
+        <Card title="List of Units">
+            <ButtonAction v-if="can(['master.units.create'])" size="sm" variant="primary" :startIcon="PlusIcon" :onClick="href">Add</ButtonAction>
             <TableList>
                 <template #header>
                     <tr class="border-b border-gray-200 dark:border-gray-700">
@@ -17,22 +15,22 @@
                     </tr>
                 </template>
                 <template #body>
-                    <template v-if="categories.length > 0">
-                        <tr v-for="(category, index) in categories" :key="index" class="border-t border-gray-100 dark:border-gray-800">
+                    <template v-if="units.length > 0">
+                        <tr v-for="(unit, index) in units" :key="index" class="border-t border-gray-100 dark:border-gray-800">
                             <td class="px-5 py-4 sm:px-6">
-                                <p class="text-theme-sm text-gray-500 dark:text-gray-400">{{ category.name }}</p>
+                                <p class="text-theme-sm text-gray-500 dark:text-gray-400">{{ unit.name }}</p>
                             </td>
                             <td class="px-5 py-4 sm:px-6">
                                 <div class="flex gap-2">
-                                    <Link v-if="can(['master.categories.edit'])" :href="`/master/categories/${category.id}/edit`">
+                                    <Link v-if="can(['master.units.edit'])" :href="`/master/units/${unit.id}/edit`">
                                         <Button size="sm" variant="outline" :startIcon="PencilIcon" />
                                     </Link>
                                     <Button
-                                        v-if="can(['master.categories.destroy'])"
+                                        v-if="can(['master.units.destroy'])"
                                         size="sm"
                                         variant="outline"
                                         :startIcon="TrashIcon"
-                                        :onClick="() => destroy(category.id)"
+                                        :onClick="() => destroy(unit.id)"
                                     />
                                 </div>
                             </td>
@@ -41,7 +39,7 @@
                     <template v-else>
                         <tr>
                             <td colspan="6" class="px-5 py-4 sm:px-6">
-                                <Alert variant="info" title="No Categories Data" message="Categories is Empty or Not Found" :showLink="false" />
+                                <Alert variant="info" title="No Units Data" message="Units is Empty or Not Found" :showLink="false" />
                             </td>
                         </tr>
                     </template>
@@ -67,17 +65,17 @@ import { usePermissions } from '@/composables/usePermissions';
 import { useSwal } from '@/composables/useSwal';
 import { useToast } from 'vue-toastification';
 
-interface Category {
+interface Unit {
     id: number;
     name: string;
 }
 
 interface Props {
-    categories: Array<Category>;
+    units: Array<Unit>;
 }
 
 const href = () => {
-    router.visit('/master/categories/create');
+    router.visit('/master/units/create');
 };
 
 const toast = useToast();
@@ -86,7 +84,7 @@ const { can } = usePermissions();
 
 const destroy = async (id: number): Promise<void> => {
     const result = await swal.fire({
-        title: 'Do you want to delete the category?',
+        title: 'Do you want to delete the unit?',
         showCancelButton: true,
         confirmButtonText: 'Yes, Delete it',
         icon: 'question',
@@ -94,9 +92,9 @@ const destroy = async (id: number): Promise<void> => {
     });
 
     if (result.isConfirmed) {
-        router.delete(`/master/categories/${id}`, {
+        router.delete(`/master/units/${id}`, {
             onSuccess: () => {
-                toast.success('Category Delete Successfully!');
+                toast.success('Unit Delete Successfully!');
             },
             onError: (error) => {
                 console.log(error);

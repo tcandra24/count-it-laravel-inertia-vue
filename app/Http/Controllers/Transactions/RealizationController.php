@@ -11,6 +11,7 @@ use Carbon\Carbon;
 
 // Models
 use App\Models\Plan;
+use App\Models\Unit;
 use App\Models\PlanDetail;
 use App\Models\Realization;
 
@@ -25,7 +26,7 @@ class RealizationController extends Controller
      */
     public function index()
     {
-        $realizations = Realization::with(['plan_detail', 'plan_detail.plan', 'plan_detail.plan.user', 'plan_detail.plan.category'])->get();
+        $realizations = Realization::with(['plan_detail', 'plan_detail.plan', 'plan_detail.plan.user', 'plan_detail.plan.category', 'unit'])->get();
 
         return Inertia::render('transaction/realizations/Index', ['realizations' => $realizations]);
     }
@@ -40,7 +41,9 @@ class RealizationController extends Controller
             ->where('year', $now->year)
             ->get();
 
-        return Inertia::render('transaction/realizations/Create', ['plans' => $plans]);
+        $units = Unit::all();
+
+        return Inertia::render('transaction/realizations/Create', ['plans' => $plans, 'units' => $units]);
     }
 
     /**
@@ -68,6 +71,7 @@ class RealizationController extends Controller
 
                 Realization::create([
                     'plan_detail_id' => $plan_detial_id,
+                    'unit_id' => $request->unit_id,
                     'name' => $request->name,
                     'note' => $request->note,
                     'qty' => $request->qty,
@@ -90,7 +94,7 @@ class RealizationController extends Controller
      */
     public function show(Realization $realization)
     {
-        $realization->load(['plan_detail', 'plan_detail.plan', 'plan_detail.plan.category']);
+        $realization->load(['plan_detail', 'plan_detail.plan', 'plan_detail.plan.category', 'unit']);
         return Inertia::render('transaction/realizations/Show', ['realization' => $realization]);
     }
 
@@ -99,12 +103,15 @@ class RealizationController extends Controller
      */
     public function edit(Realization $realization)
     {
+        $realization->load(['plan_detail', 'unit']);
         $now = Carbon::now();
         $plans = Plan::with(['detail'])
             ->where('year', $now->year)
             ->get();
 
-         return Inertia::render('transaction/realizations/Edit', ['plans' => $plans, 'realization' => $realization]);
+        $units = Unit::all();
+
+        return Inertia::render('transaction/realizations/Edit', ['plans' => $plans, 'realization' => $realization, 'units' => $units]);
     }
 
     /**
@@ -129,6 +136,7 @@ class RealizationController extends Controller
 
                 $data = [
                     'plan_detail_id' => $plan_detial_id,
+                    'unit_id' => $request->unit_id,
                     'name' => $request->name,
                     'note' => $request->note,
                     'qty' => $request->qty,

@@ -51,7 +51,7 @@
                                 <p class="text-theme-sm text-gray-500 dark:text-gray-400">{{ realization.month }} / {{ realization.year }}</p>
                             </td>
                             <td class="px-5 py-4 sm:px-6">
-                                <p class="text-theme-sm text-gray-500 dark:text-gray-400">{{ realization.qty }}</p>
+                                <p class="text-theme-sm text-gray-500 dark:text-gray-400">{{ realization.qty }} {{ realization.unit?.name }}</p>
                             </td>
                             <td class="px-5 py-4 sm:px-6">
                                 <p class="text-theme-sm text-gray-500 dark:text-gray-400">{{ moneyFormat(realization.price) }}</p>
@@ -118,6 +118,10 @@ interface Category {
     name: string;
 }
 
+interface Unit {
+    name: string;
+}
+
 interface Plan {
     id: number;
     category: Category;
@@ -138,6 +142,7 @@ interface PlanDetail {
 interface Realizations {
     id: number;
     plan_detail: PlanDetail | null;
+    unit: Unit | null;
     name: string;
     qty: number;
     price: number;

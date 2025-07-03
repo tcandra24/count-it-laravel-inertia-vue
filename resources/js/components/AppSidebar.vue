@@ -161,7 +161,19 @@ import { Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 import { useSidebar } from '../composables/useSidebar';
-import { ArchiveIcon, BoxIcon, ChevronDownIcon, DoorOpen, GridIcon, HorizontalDots, ListIcon, MoneyIcon, ShieldIcon, UserCircleIcon } from '../icons';
+import {
+    ArchiveIcon,
+    BoxIcon,
+    ChevronDownIcon,
+    DoorOpen,
+    GridIcon,
+    HorizontalDots,
+    ListIcon,
+    MoneyIcon,
+    ShieldIcon,
+    TaskIcon,
+    UserCircleIcon,
+} from '../icons';
 
 const { isExpanded, isMobileOpen, isHovered, openSubmenu } = useSidebar();
 
@@ -182,13 +194,19 @@ const menuGroups = [
     },
     {
         title: 'Master',
-        permissions: ['master.categories.index', 'master.plans.index'],
+        permissions: ['master.categories.index', 'master.units.index', 'master.plans.index'],
         items: [
             {
                 icon: BoxIcon,
                 name: 'Categories',
                 path: '/master/categories',
                 permission: 'master.categories.index',
+            },
+            {
+                icon: TaskIcon,
+                name: 'Units',
+                path: '/master/units',
+                permission: 'master.units.index',
             },
             {
                 icon: ListIcon,

@@ -11,8 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('plans', function (Blueprint $table) {
-             $table->unsignedBigInteger('category_id');
+        Schema::create('units', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->timestamps();
         });
     }
 
@@ -21,8 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('plans', function (Blueprint $table) {
-            $table->dropColumn(['category_id']);
-        });
+        Schema::dropIfExists('units');
     }
 };

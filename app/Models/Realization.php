@@ -11,6 +11,7 @@ class Realization extends Model
 {
     protected $fillable = [
         'plan_detail_id',
+        'unit_id',
         'name',
         'note',
         'qty',
@@ -24,6 +25,11 @@ class Realization extends Model
     public function plan_detail()
     {
         return $this->belongsTo(PlanDetail::class);
+    }
+
+    public function unit()
+    {
+        return $this->belongsTo(Unit::class);
     }
 
     protected function name(): Attribute

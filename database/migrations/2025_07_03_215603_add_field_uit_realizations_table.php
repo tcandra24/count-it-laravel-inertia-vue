@@ -11,8 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('plans', function (Blueprint $table) {
-             $table->unsignedBigInteger('category_id');
+        Schema::table('realizations', function (Blueprint $table) {
+            $table->unsignedBigInteger('unit_id')->nullable();
+
+            $table->foreign('unit_id')->references('id')->on('units');
         });
     }
 
@@ -21,8 +23,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('plans', function (Blueprint $table) {
-            $table->dropColumn(['category_id']);
+        Schema::table('realizations', function (Blueprint $table) {
+            $table->dropForeign(['unit_id']);
+            $table->dropColumn(['unit_id']);
         });
     }
 };

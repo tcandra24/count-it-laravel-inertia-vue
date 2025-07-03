@@ -12,6 +12,7 @@ Route::group(['middleware' => ['auth']], function(){
 
     Route::prefix('master')->group(function(){
         Route::resource('categories', App\Http\Controllers\Master\CategoryController::class, [ 'except' => [ 'show' ] ]);
+        Route::resource('units', App\Http\Controllers\Master\UnitController::class, [ 'except' => [ 'show' ] ]);
         Route::resource('plans', App\Http\Controllers\Master\PlanController::class);
     });
 
