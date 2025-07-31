@@ -22,12 +22,10 @@ class StoreRealizationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'plan_detail_id' => 'nullable',
-            'unit_id' => 'required',
-            'name' => 'required',
-            'qty' => 'required',
-            'price' => 'required',
+            'month' => 'required',
+            'year' => 'required',
             'image' => 'required',
+            'details' => 'required',
         ];
     }
 }

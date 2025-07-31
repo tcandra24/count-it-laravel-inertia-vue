@@ -10,34 +10,15 @@ use Carbon\Carbon;
 class Realization extends Model
 {
     protected $fillable = [
-        'plan_detail_id',
-        'unit_id',
-        'name',
-        'note',
-        'qty',
-        'price',
-        'total',
+        'transaction_number',
         'image',
         'month',
         'year',
     ];
 
-    public function plan_detail()
+    public function detail()
     {
-        return $this->belongsTo(PlanDetail::class);
-    }
-
-    public function unit()
-    {
-        return $this->belongsTo(Unit::class);
-    }
-
-    protected function name(): Attribute
-    {
-        return Attribute::make(
-            set: fn ($value) => strtolower($value),
-            get: fn ($value) => ucwords($value),
-        );
+        return $this->hasMany(RealizationDetail::class);
     }
 
     protected function image(): Attribute

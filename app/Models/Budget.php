@@ -11,4 +11,9 @@ class Budget extends Model
         'year',
         'initial_balance',
     ];
+
+    public function detail()
+    {
+        return $this->hasMany(BudgetDetail::class);
+    }
 }

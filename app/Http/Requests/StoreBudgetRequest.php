@@ -25,6 +25,7 @@ class StoreBudgetRequest extends FormRequest
             'month' => 'required',
             'year' => 'required',
             'initial_balance' => 'required',
+            'details' => 'required',
         ];
     }
 }

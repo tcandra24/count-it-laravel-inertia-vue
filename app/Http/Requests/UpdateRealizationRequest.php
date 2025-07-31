@@ -22,13 +22,10 @@ class UpdateRealizationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'plan_detail_id' => 'nullable',
-            'unit_id' => 'required',
-            'name' => 'required',
-            'note' => 'nullable',
-            'qty' => 'required',
-            'price' => 'required',
+            'month' => 'required',
+            'year' => 'required',
             'image' => 'nullable',
+            'details' => 'required',
         ];
     }
 }

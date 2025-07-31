@@ -11,9 +11,11 @@ use Carbon\Carbon;
 
 // Models
 use App\Models\Plan;
+use App\Models\Budget;
 use App\Models\Unit;
 use App\Models\PlanDetail;
 use App\Models\Realization;
+use App\Models\RealizationDetail;
 
 // Requests
 use App\Http\Requests\StoreRealizationRequest;
@@ -26,7 +28,7 @@ class RealizationController extends Controller
      */
     public function index()
     {
-        $realizations = Realization::with(['plan_detail', 'plan_detail.plan', 'plan_detail.plan.user', 'plan_detail.plan.category', 'unit'])->get();
+        $realizations = Realization::all();
 
         return Inertia::render('transaction/realizations/Index', ['realizations' => $realizations]);
     }
@@ -38,12 +40,21 @@ class RealizationController extends Controller
     {
         $now = Carbon::now();
         $plans = Plan::with(['detail'])
+            ->where('month', $now->month)
+            ->where('year', $now->year)
+            ->get();
+        $budgets = Budget::with(['detail'])
+            ->where('month', $now->month)
             ->where('year', $now->year)
             ->get();
 
         $units = Unit::all();
 
-        return Inertia::render('transaction/realizations/Create', ['plans' => $plans, 'units' => $units]);
+        return Inertia::render('transaction/realizations/Create', [
+            'plans' => $plans,
+            'budgets' => $budgets,
+            'units' => $units,
+        ]);
     }
 
     /**
@@ -53,34 +64,38 @@ class RealizationController extends Controller
     {
         try {
             DB::transaction(function() use ($request){
-                $now = Carbon::now();
-
-                $plan_detial_id = null;
-                $month = $now->month;
-                $year = $now->year;
-                if($request->filled('plan_detail_id')){
-                    $plan_detial_id = $request->plan_detail_id;
-                    $detail = PlanDetail::with(['plan'])->where('id', $request->plan_detail_id)->first();
-
-                    $month = $detail->plan->month;
-                    $year = $detail->plan->year;
-                }
-
                 $image = $request->file('image');
                 $image->storeAs('realizations', $image->hashName(), 'public');
 
-                Realization::create([
-                    'plan_detail_id' => $plan_detial_id,
-                    'unit_id' => $request->unit_id,
-                    'name' => $request->name,
-                    'note' => $request->note,
-                    'qty' => $request->qty,
-                    'price' => $request->price,
-                    'total' => $request->qty * $request->price,
+                // Generate Code Realization
+                $now = Carbon::now();
+                $month = $now->format('m');
+                $year = $now->year;
+                $count = Realization::count() + 1;
+                $transactionNumber = 'REALIZATION/' . $month . $year . '/' . str_pad($count, 4, '0', STR_PAD_LEFT);
+                // End
+
+                $realization = Realization::create([
+                    'transaction_number' => $transactionNumber,
                     'image' => $image->hashName(),
-                    'month' => $month,
-                    'year' => $year,
+                    'month' => $request->month,
+                    'year' => $request->year,
                 ]);
+
+                $details = collect($request->details)->map(function ($detail) use ($realization) {
+                    return [
+                        'realization_id' => $realization->id,
+                        'plan_detail_id' => $detail['plan_detail_id'],
+                        'budget_detail_id' => $detail['budget_detail_id'],
+                        'unit_id' => $detail['unit_id'],
+                        'note' => $detail['note'],
+                        'qty' => $detail['qty'],
+                        'price' => $detail['price'],
+                        'total' => $detail['qty'] * $detail['price'],
+                    ];
+                })->toArray();
+
+                RealizationDetail::insert($details);
             });
 
             return redirect()->route('realizations.index');
@@ -94,7 +109,7 @@ class RealizationController extends Controller
      */
     public function show(Realization $realization)
     {
-        $realization->load(['plan_detail', 'plan_detail.plan', 'plan_detail.plan.category', 'unit']);
+        $realization->load(['detail', 'detail.plan_detail', 'detail.plan_detail.plan', 'detail.plan_detail.plan.category', 'detail.unit', 'detail.budget_detail']);
         return Inertia::render('transaction/realizations/Show', ['realization' => $realization]);
     }
 
@@ -103,15 +118,26 @@ class RealizationController extends Controller
      */
     public function edit(Realization $realization)
     {
-        $realization->load(['plan_detail', 'unit']);
+        $realization->load(['detail']);
         $now = Carbon::now();
         $plans = Plan::with(['detail'])
+            ->where('month', $now->month)
+            ->where('year', $now->year)
+            ->get();
+        $budgets = Budget::with(['detail'])
+            ->where('month', $now->month)
             ->where('year', $now->year)
             ->get();
 
+
         $units = Unit::all();
 
-        return Inertia::render('transaction/realizations/Edit', ['plans' => $plans, 'realization' => $realization, 'units' => $units]);
+        return Inertia::render('transaction/realizations/Edit', [
+            'plans' => $plans,
+            'realization' => $realization,
+            'budgets' => $budgets,
+            'units' => $units,
+        ]);
     }
 
     /**
@@ -121,29 +147,9 @@ class RealizationController extends Controller
     {
         try {
             DB::transaction(function() use ($request, $realization){
-                $now = Carbon::now();
-
-                $plan_detial_id = null;
-                $month = $now->month;
-                $year = $now->year;
-                if($request->filled('plan_detail_id')){
-                    $plan_detial_id = $request->plan_detail_id;
-                    $detail = PlanDetail::with(['plan'])->where('id', $request->plan_detail_id)->first();
-
-                    $month = $detail->plan->month;
-                    $year = $detail->plan->year;
-                }
-
                 $data = [
-                    'plan_detail_id' => $plan_detial_id,
-                    'unit_id' => $request->unit_id,
-                    'name' => $request->name,
-                    'note' => $request->note,
-                    'qty' => $request->qty,
-                    'price' => $request->price,
-                    'total' => $request->qty * $request->price,
-                    'month' => $month,
-                    'year' => $year,
+                    'month' => $request->month,
+                    'year' => $request->year,
                 ];
 
                 if($request->file('image')){
@@ -156,6 +162,24 @@ class RealizationController extends Controller
                 }
 
                 $realization->update($data);
+
+                $details = collect($request->details)->map(function ($detail) use ($realization) {
+                    return [
+                        'id' => $detail['id'],
+                        'realization_id' => $realization->id,
+                        'plan_detail_id' => $detail['plan_detail_id'],
+                        'budget_detail_id' => $detail['budget_detail_id'],
+                        'unit_id' => $detail['unit_id'],
+                        'note' => $detail['note'],
+                        'qty' => $detail['qty'],
+                        'price' => $detail['price'],
+                        'total' => $detail['qty'] * $detail['price'],
+                    ];
+                })->toArray();
+
+                RealizationDetail::upsert($details, ['id', 'realization_id'], [
+                    'plan_detail_id', 'budget_detail_id', 'unit_id', 'note', 'qty', 'price', 'total'
+                ]);
             });
 
             return redirect()->route('realizations.index');

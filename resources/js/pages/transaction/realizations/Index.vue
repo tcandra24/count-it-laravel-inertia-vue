@@ -9,22 +9,10 @@
                 <template #header>
                     <tr class="border-b border-gray-200 dark:border-gray-700">
                         <th class="w-3/11 px-5 py-3 text-left sm:px-6">
-                            <p class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Plan</p>
-                        </th>
-                        <th class="w-3/11 px-5 py-3 text-left sm:px-6">
-                            <p class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Name</p>
+                            <p class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Transaction Number</p>
                         </th>
                         <th class="w-3/11 px-5 py-3 text-left sm:px-6">
                             <p class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Period</p>
-                        </th>
-                        <th class="w-2/11 px-5 py-3 text-left sm:px-6">
-                            <p class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Qty</p>
-                        </th>
-                        <th class="w-2/11 px-5 py-3 text-left sm:px-6">
-                            <p class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Price</p>
-                        </th>
-                        <th class="w-2/11 px-5 py-3 text-left sm:px-6">
-                            <p class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Total</p>
                         </th>
                         <th class="w-2/11 px-5 py-3 text-left sm:px-6">
                             <p class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Action</p>
@@ -35,6 +23,11 @@
                     <template v-if="realizations.length > 0">
                         <tr v-for="(realization, index) in realizations" :key="index" class="border-t border-gray-100 dark:border-gray-800">
                             <td class="px-5 py-4 sm:px-6">
+                                <p class="text-theme-sm text-gray-500 dark:text-gray-400">
+                                    {{ realization.transaction_number }}
+                                </p>
+                            </td>
+                            <!-- <td class="px-5 py-4 sm:px-6">
                                 <p class="text-theme-sm mb-2 text-gray-500 dark:text-gray-400">
                                     {{ realization.plan_detail ? realization.plan_detail.name : 'Other' }}
                                 </p>
@@ -46,11 +39,11 @@
                                 <p class="text-theme-sm text-gray-500 dark:text-gray-400">
                                     {{ realization.name }}
                                 </p>
-                            </td>
+                            </td> -->
                             <td class="px-5 py-4 sm:px-6">
                                 <p class="text-theme-sm text-gray-500 dark:text-gray-400">{{ realization.month }} / {{ realization.year }}</p>
                             </td>
-                            <td class="px-5 py-4 sm:px-6">
+                            <!-- <td class="px-5 py-4 sm:px-6">
                                 <p class="text-theme-sm text-gray-500 dark:text-gray-400">{{ realization.qty }} {{ realization.unit?.name }}</p>
                             </td>
                             <td class="px-5 py-4 sm:px-6">
@@ -58,7 +51,7 @@
                             </td>
                             <td class="px-5 py-4 sm:px-6">
                                 <p class="text-theme-sm text-gray-500 dark:text-gray-400">{{ moneyFormat(realization.total) }}</p>
-                            </td>
+                            </td> -->
                             <td class="px-5 py-4 sm:px-6">
                                 <div class="flex gap-2">
                                     <Link :href="`/transaction/realizations/${realization.id}`">
@@ -80,7 +73,7 @@
                     </template>
                     <template v-else>
                         <tr>
-                            <td colspan="7" class="px-5 py-4 sm:px-6">
+                            <td colspan="3" class="px-5 py-4 sm:px-6">
                                 <Alert variant="info" title="No Realizations Data" message="Realizations is Empty or Not Found" :showLink="false" />
                             </td>
                         </tr>
@@ -93,7 +86,6 @@
 
 <script setup lang="ts">
 import Alert from '@/components/Alert.vue';
-import Badge from '@/components/Badge.vue';
 import Breadcrumb from '@/components/Breadcrumb.vue';
 import Button from '@/components/Button.vue';
 import ButtonAction from '@/components/ButtonAction.vue';
@@ -102,51 +94,44 @@ import TableList from '@/components/TableList.vue';
 import { EyeIcon, PencilIcon, PlusIcon, TrashIcon } from '@/icons';
 import DefaultLayout from '@/layouts/Default.vue';
 
-import { moneyFormat } from '@/composables/useHelpers';
-
 import { Link, router } from '@inertiajs/vue3';
 
 import { usePermissions } from '@/composables/usePermissions';
 import { useSwal } from '@/composables/useSwal';
 import { useToast } from 'vue-toastification';
 
-interface User {
-    name: string;
-}
+// interface User {
+//     name: string;
+// }
 
-interface Category {
-    name: string;
-}
+// interface Category {
+//     name: string;
+// }
 
-interface Unit {
-    name: string;
-}
+// interface Unit {
+//     name: string;
+// }
 
-interface Plan {
-    id: number;
-    category: Category;
-    month: number;
-    year: number;
-    is_active: number;
-    user: User;
-}
+// interface Plan {
+//     id: number;
+//     category: Category;
+//     month: number;
+//     year: number;
+//     is_active: number;
+//     user: User;
+// }
 
-interface PlanDetail {
-    plan: Plan;
-    name: string;
-    qty: number;
-    price: number;
-    total: number;
-}
+// interface PlanDetail {
+//     plan: Plan;
+//     name: string;
+//     qty: number;
+//     price: number;
+//     total: number;
+// }
 
 interface Realizations {
     id: number;
-    plan_detail: PlanDetail | null;
-    unit: Unit | null;
-    name: string;
-    qty: number;
-    price: number;
-    total: number;
+    transaction_number: string;
     image: string;
     month: number;
     year: number;

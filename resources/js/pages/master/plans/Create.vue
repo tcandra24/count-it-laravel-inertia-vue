@@ -364,8 +364,8 @@ interface Category {
 interface Errors {
     category_id: string;
     month: string;
-    details: string;
     year: string;
+    details: string;
 }
 
 interface Props {

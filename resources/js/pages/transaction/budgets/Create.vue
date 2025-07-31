@@ -94,6 +94,7 @@
                             autocomplete="initial_balance"
                             v-model="formData.initial_balance"
                             placeholder="Initial Balance"
+                            :disabled="details.length > 0"
                         />
                     </div>
 
@@ -102,25 +103,111 @@
             </div>
             <ButtonAction size="sm" variant="primary" @click="submit">Submit</ButtonAction>
         </Card>
+        <Card title="List of Detail" class="mt-5">
+            <ButtonAction size="sm" variant="primary" @click="add()">Add Detail</ButtonAction>
+            <p class="text-theme-xs text-error-500 mt-1.5" v-if="errors.details">{{ errors.details }}</p>
+            <TableList
+                :class="{
+                    '!border-error-300 dark:!border-error-700': errors.details,
+                }"
+            >
+                <template #header>
+                    <tr class="border-b border-gray-200 dark:border-gray-700">
+                        <th class="w-3/11 px-5 py-3 text-left sm:px-6">
+                            <p class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Name</p>
+                        </th>
+                        <th class="w-2/11 px-5 py-3 text-left sm:px-6">
+                            <p class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Precentage</p>
+                        </th>
+                        <th class="w-2/11 px-5 py-3 text-left sm:px-6">
+                            <p class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Nominal</p>
+                        </th>
+                        <th class="w-2/11 px-5 py-3 text-left sm:px-6">
+                            <p class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Action</p>
+                        </th>
+                    </tr>
+                </template>
+                <template #body>
+                    <template v-if="details.length > 0">
+                        <tr v-for="(detail, index) in details" :key="index" class="border-t border-gray-100 dark:border-gray-800">
+                            <td class="px-5 py-4 sm:px-6">
+                                <Input
+                                    id="name"
+                                    type="text"
+                                    required
+                                    autofocus
+                                    :tabindex="1"
+                                    autocomplete="name"
+                                    v-model="detail.name"
+                                    placeholder="Name"
+                                />
+                            </td>
+                            <td class="px-5 py-4 sm:px-6">
+                                <Input
+                                    id="precentage"
+                                    type="number"
+                                    required
+                                    autofocus
+                                    :tabindex="1"
+                                    autocomplete="precentage"
+                                    v-model="detail.precentage"
+                                    placeholder="Precentage"
+                                    min="1"
+                                    max="100"
+                                    @input="detail.nominal = countPrecentage(detail.precentage)"
+                                />
+                            </td>
+                            <td class="px-5 py-4 sm:px-6">
+                                <p class="text-theme-sm text-gray-500 dark:text-gray-400">{{ moneyFormat(detail.nominal) }}</p>
+                            </td>
+                            <td class="px-5 py-4 sm:px-6">
+                                <Button size="sm" variant="outline" :startIcon="TrashIcon" :onClick="() => remove(detail.id)" />
+                            </td>
+                        </tr>
+                    </template>
+                    <template v-else>
+                        <tr>
+                            <td colspan="5" class="px-5 py-4 sm:px-6">
+                                <Alert variant="info" title="No Budgets Data" message="Budget is Empty or Not Found" :showLink="false" />
+                            </td>
+                        </tr>
+                    </template>
+                </template>
+            </TableList>
+        </Card>
     </DefaultLayout>
 </template>
 
 <script setup lang="ts">
+import Alert from '@/components/Alert.vue';
 import Breadcrumb from '@/components/Breadcrumb.vue';
+import Button from '@/components/Button.vue';
 import ButtonAction from '@/components/ButtonAction.vue';
 import Card from '@/components/Card.vue';
+import TableList from '@/components/TableList.vue';
 import { Input } from '@/components/ui/input';
+import { TrashIcon } from '@/icons';
 import DefaultLayout from '@/layouts/Default.vue';
 
 import { useSwal } from '@/composables/useSwal';
 import { router } from '@inertiajs/vue3';
-import { reactive } from 'vue';
+import { reactive, ref } from 'vue';
 import { useToast } from 'vue-toastification';
+
+import { moneyFormat } from '@/composables/useHelpers';
+
+interface Detail {
+    id: number;
+    name: string;
+    precentage: number;
+    nominal: number;
+}
 
 interface Errors {
     month: string;
     year: string;
     initial_balance: string;
+    details: string;
 }
 
 interface Props {
@@ -135,6 +222,36 @@ const formData = reactive({
     year: '',
     initial_balance: 0,
 });
+
+const details = ref<Detail[]>([]);
+
+const add = () => {
+    details.value = [
+        ...details.value,
+        {
+            id: new Date().getTime(),
+            name: '',
+            precentage: 0,
+            nominal: 0,
+        },
+    ];
+};
+
+const remove = (id: number): void => {
+    details.value = details.value.filter((element) => element.id !== id);
+};
+
+const countPrecentage = (value: number): number => {
+    if (formData.initial_balance === 0) {
+        return 0;
+    }
+
+    if (value > 100) {
+        return 0;
+    }
+
+    return (value / 100) * formData.initial_balance;
+};
 
 const submit = async (): Promise<void> => {
     const result = await swal.fire({
@@ -152,6 +269,7 @@ const submit = async (): Promise<void> => {
                 month: formData.month,
                 year: formData.year,
                 initial_balance: formData.initial_balance,
+                details: details.value,
             },
             {
                 onSuccess: () => {

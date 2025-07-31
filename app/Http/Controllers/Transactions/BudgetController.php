@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Transactions;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 // Models
 use App\Models\Budget;
+use App\Models\BudgetDetail;
 
 // Requests
 use App\Http\Requests\StoreBudgetRequest;
@@ -38,11 +40,24 @@ class BudgetController extends Controller
     public function store(StoreBudgetRequest $request)
     {
         try {
-            Budget::create([
-                'month' => $request->month,
-                'year' => $request->year,
-                'initial_balance' => $request->initial_balance,
-            ]);
+            DB::transaction(function() use ($request){
+                $budget = Budget::create([
+                    'month' => $request->month,
+                    'year' => $request->year,
+                    'initial_balance' => $request->initial_balance,
+                ]);
+
+                $detail = collect($request->details)->map(function ($detail) use ($budget) {
+                    return [
+                        'budget_id' => $budget->id,
+                        'name' => $detail['name'],
+                        'precentage' => $detail['precentage'],
+                        'nominal' => $detail['nominal']
+                    ];
+                })->toArray();
+
+                BudgetDetail::insert($detail);
+            });
 
             return redirect()->route('budgets.index');
         } catch (\Exception $e) {
@@ -55,7 +70,8 @@ class BudgetController extends Controller
      */
     public function edit(Budget $budget)
     {
-         return Inertia::render('transaction/budgets/Edit', ['budget' => $budget]);
+        $budget->load(['detail']);
+        return Inertia::render('transaction/budgets/Edit', ['budget' => $budget]);
     }
 
     /**
@@ -64,11 +80,30 @@ class BudgetController extends Controller
     public function update(UpdateBudgetRequest $request, Budget $budget)
     {
         try {
-            $budget->update([
-                'month' => $request->month,
-                'year' => $request->year,
-                'initial_balance' => $request->initial_balance,
-            ]);
+            DB::transaction(function() use ($request, $budget){
+                $budget->update([
+                    'month' => $request->month,
+                    'year' => $request->year,
+                    'initial_balance' => $request->initial_balance,
+                ]);
+
+                $requestDetailId = collect($request->details)->pluck('id')->toArray();
+
+                $budget->detail()->whereNotIn('id', $requestDetailId)->delete();
+
+                $details = collect($request->details)->map(function ($detail) use ($budget) {
+
+                    return [
+                        'id' => $detail['id'],
+                        'budget_id' => $budget->id,
+                        'name' => $detail['name'],
+                        'precentage' => $detail['precentage'],
+                        'nominal' => $detail['nominal']
+                    ];
+                })->toArray();
+
+                BudgetDetail::upsert($details, ['id', 'budget_id'], ['name', 'precentage', 'nominal']);
+            });
 
             return redirect()->route('budgets.index');
         } catch (\Exception $e) {
